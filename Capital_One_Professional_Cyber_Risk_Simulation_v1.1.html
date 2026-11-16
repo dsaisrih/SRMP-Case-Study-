@@ -1,0 +1,1245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Capital One 2019 Cyber Risk Simulation Lab</title>
+<style>
+:root{color-scheme:light;
+--bg:#eef2f8;--card:#fff;--card2:#f6f9fd;--tx:#0b1a30;--mu:#4d5d77;--bd:#d3dbe8;--nav:#0a1f3d;--navtx:#e8f0fb;
+--ac:#0a6cb5;--actx:#fff;--cy:#0e7490;--cyb:#22b8d8;
+--ok:#0b7a4f;--okbg:#ddf3e8;--bad:#b3261e;--badbg:#fbe3e0;--wn:#8f5400;--wnbg:#fdeccb;--in:#0e6b8a;--inbg:#d9f0f8;
+--r-low:#d6f0dd;--r-med:#fff0b8;--r-high:#ffd5ac;--r-crit:#f7bdb7;--act:#fff1c9;
+--sh:0 1px 2px rgba(10,31,61,.06),0 4px 14px rgba(10,31,61,.05)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;
+--bg:#060f1d;--card:#0c1a2e;--card2:#0f2038;--tx:#e6edf7;--mu:#9db0c8;--bd:#1f3250;--nav:#081628;--navtx:#e8f0fb;
+--ac:#38bdf8;--actx:#04121f;--cy:#5fd3ee;--cyb:#22b8d8;
+--ok:#4cc79a;--okbg:#0f3025;--bad:#ff8f86;--badbg:#3a1a1a;--wn:#f0b45a;--wnbg:#3a2d12;--in:#6fd0ee;--inbg:#0e3040;
+--r-low:#12402b;--r-med:#453c10;--r-high:#4d2f12;--r-crit:#53201e;--act:#3a3216;--sh:none}}
+:root[data-theme="dark"]{color-scheme:dark;
+--bg:#060f1d;--card:#0c1a2e;--card2:#0f2038;--tx:#e6edf7;--mu:#9db0c8;--bd:#1f3250;--nav:#081628;--navtx:#e8f0fb;
+--ac:#38bdf8;--actx:#04121f;--cy:#5fd3ee;--cyb:#22b8d8;
+--ok:#4cc79a;--okbg:#0f3025;--bad:#ff8f86;--badbg:#3a1a1a;--wn:#f0b45a;--wnbg:#3a2d12;--in:#6fd0ee;--inbg:#0e3040;
+--r-low:#12402b;--r-med:#453c10;--r-high:#4d2f12;--r-crit:#53201e;--act:#3a3216;--sh:none}
+*{box-sizing:border-box}
+html{scroll-padding-top:70px}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
+h1,h2,h3,h4{margin:0;line-height:1.25}
+h2{font-size:19px;margin-bottom:6px}h3{font-size:15.5px}h4{font-size:13.5px;margin:12px 0 4px}
+p{margin:6px 0}
+a{color:var(--ac)}
+.mu{color:var(--mu)}.sm{font-size:13px}.xs{font-size:12px}.mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+:focus-visible{outline:3px solid var(--cyb);outline-offset:2px;border-radius:4px}
+/* header */
+.top{background:linear-gradient(135deg,#06182e 0%,#0b2a4d 55%,#0d3a66 100%);color:var(--navtx);padding:0 16px;border-bottom:3px solid #d03027;position:relative;overflow:hidden}
+.top::after{content:"";position:absolute;right:-90px;top:-120px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(95,211,238,.16),transparent 68%);pointer-events:none}
+.top-in{max-width:1180px;margin:0 auto;position:relative;z-index:1}
+.top-bar{display:flex;gap:14px;justify-content:space-between;align-items:center;flex-wrap:wrap;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.12)}
+.eyebrow{font-size:12.5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#9fd8ea;display:flex;align-items:center;gap:10px}
+.eyebrow::before{content:"";width:28px;height:3px;background:#d03027;border-radius:2px}
+.hero{padding:26px 0 24px}
+.top h1{font-size:clamp(32px,5.6vw,56px);font-weight:800;letter-spacing:-.015em;line-height:1.08;color:#fff;max-width:900px}
+.top h1 span{display:block;font-size:.5em;font-weight:600;letter-spacing:.01em;color:#cfe3f7;margin-top:8px}
+.top .sub{font-size:clamp(14px,1.6vw,17px);color:#b7c8de;margin-top:14px;max-width:860px;line-height:1.5}
+.badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+.badge{font-size:12px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.05);color:#d6e4f6;border-radius:6px;padding:4px 12px}
+.top-act{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.status{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);border-radius:999px;padding:6px 14px;font-size:13px;font-weight:600;min-height:40px;color:#fff}
+.dot{width:10px;height:10px;border-radius:50%;background:#8aa0bd;flex:none}
+.dot.run{background:#ffd37a;animation:pulse 1s infinite}.dot.ok{background:#4cc79a}.dot.bad{background:#ff8f86}.dot.in{background:#5fd3ee}
+@keyframes pulse{50%{opacity:.35}}
+/* buttons */
+.btn{min-height:42px;padding:0 16px;border-radius:9px;border:1px solid transparent;background:var(--ac);color:var(--actx);font:600 14px system-ui,sans-serif;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn:hover:not(:disabled){filter:brightness(1.08)}
+.btn.sec{background:transparent;color:var(--ac);border-color:var(--ac)}
+.btn.sm{min-height:34px;padding:0 12px;font-size:13px}
+.btn.ghost{background:rgba(255,255,255,.08);color:#fff;border-color:rgba(255,255,255,.25)}
+.btn[aria-pressed="true"]{background:var(--ac);color:var(--actx)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.danger{background:transparent;color:var(--bad);border-color:var(--bad)}
+/* nav */
+.tabs{position:sticky;top:0;z-index:20;background:var(--card);border-bottom:1px solid var(--bd);box-shadow:var(--sh)}
+.tabs-in{max-width:1180px;margin:0 auto;display:flex;overflow-x:auto;padding:0 8px;scrollbar-width:thin}
+.tab{flex:none;background:none;border:0;border-bottom:3px solid transparent;padding:12px 14px;min-height:46px;color:var(--mu);font:600 14px system-ui,sans-serif;cursor:pointer;white-space:nowrap}
+.tab:hover{color:var(--tx)}
+.tab[aria-selected="true"]{color:var(--cy);border-bottom-color:var(--cyb)}
+.wrap{max-width:1180px;margin:0 auto;padding:16px}
+.panel[hidden]{display:none}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:16px;margin:0 0 14px;box-shadow:var(--sh)}
+.card>h2:first-child,.card>.hd:first-child h2{margin-top:0}
+.hd{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap;margin-bottom:6px}
+.note{border-left:4px solid var(--in);background:var(--inbg);padding:9px 12px;border-radius:6px;font-size:13.5px;margin:10px 0}
+.note.warn{border-color:var(--wn);background:var(--wnbg)}
+.note.bad{border-color:var(--bad);background:var(--badbg)}
+.note b{font-weight:700}
+.grid{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(165px,1fr))}
+.g2{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(340px,1fr))}
+.kpi{background:var(--card2);border:1px solid var(--bd);border-radius:10px;padding:11px 12px}
+.kpi .l{font-size:12px;color:var(--mu);font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+.kpi .v{font-size:22px;font-weight:700;margin-top:2px;overflow-wrap:anywhere}
+.kpi .s{font-size:12px;color:var(--mu)}
+.kpi.hist{border-top:3px solid var(--bad)}.kpi.sim{border-top:3px solid var(--cyb)}
+.tag{display:inline-block;font-size:11.5px;border:1px solid var(--bd);border-radius:999px;padding:0 8px;color:var(--mu);font-weight:500;margin:0 4px 3px 0;white-space:nowrap}
+.pill{display:inline-block;border-radius:999px;padding:1px 10px;font-size:12px;font-weight:700;white-space:nowrap}
+.p-ok{background:var(--okbg);color:var(--ok)}.p-bad{background:var(--badbg);color:var(--bad)}.p-wn{background:var(--wnbg);color:var(--wn)}.p-in{background:var(--inbg);color:var(--in)}.p-mu{background:var(--card2);color:var(--mu);border:1px solid var(--bd)}
+.r-Low{background:var(--r-low)}.r-Medium{background:var(--r-med)}.r-High{background:var(--r-high)}.r-Critical{background:var(--r-crit)}
+.lv{display:inline-block;border-radius:6px;padding:1px 8px;font-size:12px;font-weight:700;color:var(--tx)}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{border-bottom:1px solid var(--bd);padding:7px 8px;text-align:left;vertical-align:top}
+th{font-size:12px;color:var(--mu);text-transform:uppercase;letter-spacing:.03em;white-space:nowrap}
+td.nw{white-space:nowrap}
+tr.sel td{background:var(--act)}
+tr.clk{cursor:pointer}tr.clk:hover td{background:var(--card2)}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12.5px;color:var(--mu);margin:6px 0}
+.sw-box{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:4px;border:1px solid var(--bd)}
+/* lifecycle */
+.life{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:8px}
+.life button{text-align:left;background:var(--card2);border:1px solid var(--bd);border-radius:10px;padding:9px 10px;cursor:pointer;color:var(--tx);font:inherit}
+.life button:hover{border-color:var(--cyb)}
+.life b{display:block;color:var(--cy);font-size:12.5px;letter-spacing:.05em}
+.life span{font-size:12.5px;color:var(--mu)}
+/* arch */
+.svgwrap{overflow-x:auto;border:1px solid var(--bd);border-radius:10px;background:var(--card2)}
+.svgwrap svg{display:block;min-width:820px;width:100%;height:auto}
+svg text{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;fill:var(--tx)}
+.bnd{fill:none;stroke:var(--mu);stroke-width:1.5;stroke-dasharray:6 5}
+.bnd.in{stroke:var(--cy)}.bnd.out{stroke:var(--bad)}
+.bl{font-size:11px;font-weight:700;letter-spacing:.06em;fill:var(--mu)}
+.node rect{fill:var(--card);stroke:var(--mu);stroke-width:1.6}
+.node .nt{font-size:13px;font-weight:700}.node .ns{font-size:10.5px;fill:var(--mu)}
+.node.hit rect{fill:var(--badbg);stroke:var(--bad);stroke-width:2.4}
+.node.blk rect{fill:var(--okbg);stroke:var(--ok);stroke-width:2.4}
+.edge{stroke:var(--mu);stroke-width:2.2;fill:none}
+.edge.act{stroke:var(--wn);stroke-dasharray:7 5;animation:dash .5s linear infinite}
+.edge.ok{stroke:var(--bad);stroke-width:3}.edge.blk{stroke:var(--ok);stroke-dasharray:3 5}
+@keyframes dash{to{stroke-dashoffset:-12}}
+.sb circle{fill:var(--nav);stroke:var(--cyb);stroke-width:1.5}.sb text{fill:#fff;font-size:11px;font-weight:700;text-anchor:middle}
+.cb circle{fill:var(--card);stroke:var(--mu);stroke-width:1.8;stroke-dasharray:3 3}
+.cb text.cl{font-size:12.5px;font-weight:800;text-anchor:middle;fill:var(--mu)}
+.cb text.cc{font-size:10px;text-anchor:middle;fill:var(--mu)}
+.cb.on circle{fill:var(--ok);stroke:var(--ok);stroke-dasharray:none}
+.cb.on text.cl{fill:#fff}.cb.on text.cc{fill:var(--ok);font-weight:700}
+/* chain */
+.chain{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.stage{border:1px solid var(--bd);border-radius:12px;padding:11px;background:var(--card);position:relative;transition:background .3s,border-color .3s}
+.stage .sn{font-size:11.5px;font-weight:700;color:var(--cy);letter-spacing:.06em}
+.stage .st{font-weight:700;margin:2px 0 6px}
+.stage dl{margin:0;font-size:12.5px}.stage dt{color:var(--mu);font-weight:600;margin-top:5px;font-size:11.5px;text-transform:uppercase;letter-spacing:.03em}.stage dd{margin:0}
+.stage .state{margin-top:9px;font-weight:700;font-size:13.5px;display:flex;gap:6px;align-items:center}
+.stage .snote{font-size:12px;color:var(--mu);margin-top:3px}
+.stage.st-attacking{background:var(--act);border-color:var(--wn);animation:glow 1s infinite}
+.stage.st-success{background:var(--badbg);border-color:var(--bad)}
+.stage.st-blocked{background:var(--okbg);border-color:var(--ok)}
+.stage.st-detected{background:var(--wnbg);border-color:var(--wn)}
+.stage.st-mitigated{background:var(--inbg);border-color:var(--in)}
+.stage.st-success .state{color:var(--bad)}.stage.st-blocked .state{color:var(--ok)}.stage.st-detected .state{color:var(--wn)}.stage.st-mitigated .state{color:var(--in)}
+@keyframes glow{50%{box-shadow:0 0 0 3px rgba(240,180,90,.35)}}
+.chain.compact .stage dl{display:none}
+.prog{height:6px;background:var(--bd);border-radius:3px;margin:8px 0;overflow:hidden}
+.prog i{display:block;height:100%;width:0;background:var(--bad);transition:width .5s}
+.out{padding:11px 12px;border-radius:10px;border:1px dashed var(--bd);min-height:46px;margin-top:10px}
+.out.bad{border-style:solid;border-color:var(--bad);background:var(--badbg)}
+.out.ok{border-style:solid;border-color:var(--ok);background:var(--okbg)}
+.out.wn{border-style:solid;border-color:var(--wn);background:var(--wnbg)}
+.log{margin-top:8px;background:#08111d;color:#b8f5d0;border-radius:10px;padding:10px;font:12px/1.65 ui-monospace,Menlo,Consolas,monospace;max-height:190px;overflow:auto;min-height:64px}
+.log .x{color:#ff9d94}.log .g{color:#7ee2a8}.log .w{color:#ffd37a}.log .i{color:#8fd3ff}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.row>select{flex:1 1 220px;min-width:0}
+.row.gap{margin-top:10px}
+select,input[type=number],input[type=text]{min-height:38px;border:1px solid var(--bd);border-radius:8px;background:var(--card);color:var(--tx);padding:0 10px;font:inherit;font-size:14px}
+input[type=number]{width:96px}
+select{max-width:100%}
+input[aria-invalid="true"]{border-color:var(--bad);box-shadow:0 0 0 2px var(--badbg)}
+input[type=range]{flex:1;min-width:150px;accent-color:var(--cyb)}
+/* controls */
+.ctrl{border:1px solid var(--bd);border-radius:12px;padding:13px;margin:10px 0;background:var(--card)}
+.ctrl.on{border-color:var(--ok);background:linear-gradient(0deg,var(--card),var(--card))}
+.ctrl-h{display:flex;gap:12px;align-items:flex-start}
+.swt{position:relative;display:inline-block;width:52px;height:30px;flex:none;margin-top:2px}
+.swt input{position:absolute;inset:0;opacity:0;width:100%;height:100%;margin:0;cursor:pointer;z-index:2}
+.swt .tk{position:absolute;inset:0;border-radius:999px;background:var(--bd);border:1px solid var(--mu);transition:background .2s}
+.swt .tk::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.4);transition:transform .2s}
+.swt input:checked+.tk{background:var(--ok);border-color:var(--ok)}
+.swt input:checked+.tk::after{transform:translateX(22px)}
+.swt input:focus-visible+.tk{outline:3px solid var(--cyb);outline-offset:2px}
+.swt input:disabled{cursor:not-allowed}
+.ctrl ul{margin:6px 0 6px 18px;padding:0;font-size:13.5px}
+.ctrl-p{display:flex;gap:16px;flex-wrap:wrap;margin:8px 0;align-items:flex-end}
+.ctrl-p label{font-size:12.5px;color:var(--mu);display:flex;flex-direction:column;gap:3px}
+.ver{font-size:13px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.probe{background:#08111d;color:#b8f5d0;border-radius:8px;padding:8px 10px;font:12px/1.55 ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap;margin:6px 0 0;overflow:auto}
+.probe:empty{display:none}
+/* charts */
+.hb{display:grid;grid-template-columns:minmax(120px,230px) 1fr minmax(60px,auto);gap:8px;align-items:center;margin:5px 0;font-size:13px}
+.hb .tr{height:15px;background:var(--bd);border-radius:8px;overflow:hidden}
+.hb .tr i{display:block;height:100%;min-width:2px;background:var(--cyb)}
+.hb .tr i.r{background:var(--bad)}.hb .tr i.g{background:var(--ok)}.hb .tr i.m{background:var(--mu)}.hb .tr i.w{background:var(--wn)}
+.hb .hv{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.yrs{display:grid;grid-template-columns:repeat(20,1fr);gap:3px;margin:8px 0}
+.yrs i{aspect-ratio:1;border-radius:2px;background:var(--okbg);border:1px solid var(--bd)}.yrs i.b{background:var(--bad);border-color:var(--bad)}
+/* matrix */
+.mx{display:grid;grid-template-columns:auto repeat(5,minmax(46px,1fr));gap:3px;font-size:11.5px}
+.mx .ax{display:flex;align-items:center;justify-content:center;text-align:center;color:var(--mu);font-weight:600;padding:2px}
+.mx .cell{min-height:54px;border-radius:6px;padding:3px;display:flex;flex-wrap:wrap;gap:2px;align-content:flex-start;position:relative;border:1px solid rgba(0,0,0,.06)}
+.mx .cell .sc{position:absolute;right:4px;bottom:1px;font-size:10px;color:var(--mu)}
+.chip{background:var(--nav);color:#fff;border-radius:5px;font-size:11px;font-weight:700;padding:0 5px;height:18px;line-height:18px}
+.chip.q{background:transparent;color:var(--tx);border:1.5px dashed var(--tx)}
+.eq{background:var(--card2);border:1px solid var(--bd);border-radius:8px;padding:8px 10px;font:13px/1.7 ui-monospace,Menlo,Consolas,monospace;margin:6px 0;overflow-x:auto}
+/* timeline */
+.tl{list-style:none;margin:8px 0 0;padding:0;position:relative}
+.tl::before{content:"";position:absolute;left:11px;top:6px;bottom:6px;width:2px;background:var(--bd)}
+.tl li{position:relative;padding:0 0 10px 34px}
+.tl li::before{content:"";position:absolute;left:5px;top:10px;width:14px;height:14px;border-radius:50%;background:var(--card);border:3px solid var(--bad)}
+.tl button{width:100%;text-align:left;background:var(--card2);border:1px solid var(--bd);border-radius:10px;padding:8px 12px;cursor:pointer;color:var(--tx);font:inherit}
+.tl button:hover{border-color:var(--cyb)}
+.tl b{color:var(--cy)}
+.tl .dd{display:none;font-size:13.5px;margin-top:6px;color:var(--tx)}
+.tl button[aria-expanded="true"] .dd{display:block}
+.tl button .ar{float:right;color:var(--mu)}
+/* misc */
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--nav);color:#fff;padding:9px 16px;border-radius:10px;font-size:13.5px;z-index:300;max-width:90vw;box-shadow:0 6px 20px rgba(0,0,0,.35)}
+.toast[hidden]{display:none}
+.rep{border:1px solid var(--bd);border-radius:12px;padding:18px;background:var(--card)}
+.rep h2{border-bottom:2px solid var(--cyb);padding-bottom:4px;margin-top:20px;font-size:17px}
+.rep h2:first-child{margin-top:0}
+.rep .kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:6px 18px;font-size:13.5px}
+.rep .kv div{border-bottom:1px solid var(--bd);padding:3px 0;display:flex;justify-content:space-between;gap:8px}
+.stale{display:none}
+.stale.show{display:block}
+/* presentation */
+#pres{position:fixed;inset:0;z-index:200;background:var(--bg);display:flex;flex-direction:column}
+#pres[hidden]{display:none}
+.pres-top{background:var(--nav);color:#fff;padding:10px 16px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.pres-top h2{color:#fff;margin:0;font-size:18px}
+.pres-body{flex:1;overflow:auto;padding:18px;max-width:1280px;width:100%;margin:0 auto}
+.pres-nav{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 16px;border-top:1px solid var(--bd);background:var(--card);flex-wrap:wrap}
+.pres .big{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.pres .big .kpi .v{font-size:34px}.pres .big .kpi .l{font-size:13px}
+.pres h3{font-size:22px;margin-bottom:8px}
+.pres .stage{padding:14px}.pres .stage .st{font-size:15px}.pres .state{font-size:16px}
+.pres .out{font-size:17px;padding:14px}
+.dots{display:flex;gap:6px}.dots i{width:10px;height:10px;border-radius:50%;background:var(--bd)}.dots i.on{background:var(--cyb)}
+.notes{background:var(--card2);border:1px solid var(--bd);border-radius:10px;padding:10px 14px;font-size:14px;margin-top:12px}
+@media (max-width:640px){
+.top h1{font-size:30px}.hero{padding:18px 0 16px}.wrap{padding:10px}.card{padding:12px}.kpi .v{font-size:19px}
+.hb{grid-template-columns:100px 1fr 58px}.g2{grid-template-columns:1fr}
+.pres .big .kpi .v{font-size:26px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media print{
+body{background:#fff;color:#000}
+.top,.tabs,.noprint,.toast,#pres{display:none!important}
+.panel{display:none!important}
+#tab-report{display:block!important}
+.wrap{padding:0;max-width:none}.card{box-shadow:none;border:0;padding:0}
+.rep{border:0;padding:0}.rep h2{break-after:avoid}.rep table{break-inside:avoid}
+:root{--bg:#fff;--card:#fff;--card2:#f4f6fa;--tx:#000;--mu:#333;--bd:#bbb}
+}
+</style>
+</head>
+<body>
+<noscript>This simulation requires JavaScript. It runs entirely in your browser, with no backend and no network calls.</noscript>
+
+<header class="top">
+ <div class="top-in">
+  <div class="top-bar">
+   <div class="eyebrow">Capital One &middot; 2019 Cloud Data Breach</div>
+   <div class="top-act">
+    <div class="status" role="status" aria-live="polite"><span class="dot" id="sdot"></span><span id="stxt">Ready</span></div>
+    <button class="btn ghost" id="btn-pres" type="button">Presentation mode</button>
+    <button class="btn ghost" id="btn-reset" type="button" title="Reset controls, assumptions, attack replay, Monte Carlo and report">Reset simulation</button>
+    <button class="btn ghost" id="btn-theme" type="button" aria-label="Toggle light or dark theme">Light / dark</button>
+   </div>
+  </div>
+  <div class="hero">
+   <h1>Cyber Risk Simulation Lab<span>Cloud Security Audit &amp; Attack Defence Analysis</span></h1>
+   <div class="sub">Interactive cloud security audit, attack simulation, risk assessment and security control evaluation.</div>
+   <div class="badges">
+    <span class="badge">SRM Institute of Science and Technology, Kattankulathur</span>
+    <span class="badge">Security Risk Management Principles &ndash; 21CSC308T</span>
+   </div>
+  </div>
+ </div>
+</header>
+
+<nav class="tabs" aria-label="Sections"><div class="tabs-in" role="tablist" id="tablist"></div></nav>
+
+<main class="wrap">
+
+<!-- OVERVIEW -->
+<section class="panel" id="tab-overview" role="tabpanel" aria-labelledby="t-overview">
+ <div class="card">
+  <div class="hd"><h2>Incident overview</h2><span class="legend"><span><span class="sw-box" style="background:var(--bad)"></span>Historical, public record</span><span><span class="sw-box" style="background:var(--cyb)"></span>Simulation-generated</span></span></div>
+  <div class="grid" id="kpi-hist"></div>
+  <div class="note warn"><b>$270M is a loss proxy, not the total economic loss.</b> It is the sum of the $80M OCC civil money penalty and the $190M class-action settlement. It excludes the bank's own investigation, remediation, legal, credit-monitoring and reputational costs, none of which are verified here. The simulation uses $270M only as an illustrative single loss expectancy (SLE).</div>
+  <h3 style="margin-top:14px">Simulation state</h3>
+  <div class="grid" id="kpi-sim"></div>
+ </div>
+
+ <div class="card">
+  <div class="hd"><h2>Cloud security architecture</h2><span class="xs mu">Numbered circles = attack stages · lettered circles = controls (filled when active)</span></div>
+  <div class="svgwrap" id="arch-ov"></div>
+  <div class="legend"><span><span class="sw-box" style="background:var(--bad)"></span>Attacker succeeds</span><span><span class="sw-box" style="background:var(--ok)"></span>Blocked by control</span><span><span class="sw-box" style="background:var(--wn)"></span>Attack in progress</span><span>Dashed boxes = security / trust boundaries</span></div>
+  <p class="sm mu">Simplified, illustrative architecture of the attack path described in public records. It is not Capital One's actual network diagram.</p>
+ </div>
+
+ <div class="card">
+  <h2>SRMP lifecycle used in this lab</h2>
+  <p class="sm mu">Click a step to jump to the part of the lab that demonstrates it.</p>
+  <div class="life" id="life"></div>
+ </div>
+
+ <div class="card">
+  <div class="hd"><h2>Incident timeline</h2><span class="tag">All entries are historical facts, not simulation output</span></div>
+  <ul class="tl" id="tl"></ul>
+  <p class="xs mu">Sources: public record, namely the US DOJ criminal complaint (July 2019), Capital One public statements (July 2019), the OCC enforcement action and Federal Reserve order (August 2020), court records and the OCC termination notice (August 2022). Verify dates against these primary sources before citing.</p>
+ </div>
+</section>
+
+<!-- ATTACK -->
+<section class="panel" id="tab-attack" role="tabpanel" aria-labelledby="t-attack" hidden>
+ <div class="card">
+  <div class="hd"><h2>Attack chain simulation</h2><span class="tag">Dummy data only · no real systems are contacted</span></div>
+  <p class="sm mu">A five-stage attack replay. Active controls can stop the chain at stages 2, 3 and 4 and limit the damage at stage 5. Configure controls in the <b>Security Controls</b> tab or with the presets below.</p>
+  <div class="row"><span class="sm"><b>Defence:</b></span><span id="cfg-name-a" class="pill p-in"></span><span class="sm mu" id="cfg-list-a"></span></div>
+  <div class="row gap" id="presets-a"></div>
+  <div class="row gap">
+   <label class="sm" for="mode-main"><b>Replay mode:</b></label>
+   <select id="mode-main" data-lock class="modesel">
+    <option value="model">Model: each control blocks with its assumed probability</option>
+    <option value="demo">Demonstration: an active control always blocks</option>
+   </select>
+  </div>
+  <div class="svgwrap" style="margin-top:12px" id="arch-atk"></div>
+  <div class="prog"><i class="pbar"></i></div>
+  <div class="chain" id="chain-main"></div>
+  <div class="out outbox" aria-live="polite">Press “Launch attack”.</div>
+  <div class="note why-wrap" id="why-main" hidden></div>
+  <div class="log logbox" aria-label="Attack log"></div>
+  <div class="row gap"><button class="btn btn-launch" data-lock type="button">Launch attack</button><button class="btn sec btn-clr" type="button">Clear replay</button></div>
+  <p class="xs mu">In model mode an active control can be bypassed with the probability set in its assumption, exactly as in the Monte Carlo and ALE calculations. Use a fixed seed (Monte Carlo tab) for reproducible replays.</p>
+ </div>
+</section>
+
+<!-- CONTROLS -->
+<section class="panel" id="tab-controls" role="tabpanel" aria-labelledby="t-controls" hidden>
+ <div class="card">
+  <div class="hd"><h2>Security control configuration</h2><span id="cfg-name-c" class="pill p-in"></span></div>
+  <div class="row" id="presets-c"></div>
+  <div class="row gap"><label for="aro-c" class="sm"><b>Targeted attack attempts per year (ARO before controls):</b></label>
+   <input type="range" min="0.01" max="1" step="0.01" data-param="aro" data-lock class="aro-r" aria-label="Attack frequency slider">
+   <input type="number" id="aro-c" min="0.001" max="5" step="0.01" data-param="aro" data-lock></div>
+  <div id="ctrl-list"></div>
+ </div>
+ <div class="card">
+  <div class="hd"><h2>Control effectiveness ranking</h2><span class="tag">Each control operating alone</span></div>
+  <div class="note warn">Rankings depend entirely on the hypothetical assumptions in this model (loss proxy, attack frequency, stage probabilities, costs). They are not measured results and will change when you edit the assumptions. Standalone ROSI values are not additive, because controls overlap when combined.</div>
+  <div class="scroll"><table id="rank-t"></table></div>
+  <h4>Risk reduction per control ($M per year)</h4><div id="rank-c1"></div>
+  <h4>ROSI per control (%)</h4><div id="rank-c2"></div>
+ </div>
+</section>
+
+<!-- RISK -->
+<section class="panel" id="tab-risk" role="tabpanel" aria-labelledby="t-risk" hidden>
+ <div class="card">
+  <div class="hd"><h2>Financial risk analysis</h2><span id="cfg-name-r" class="pill p-in"></span></div>
+  <div class="grid" id="kpi-risk"></div>
+  <div class="row gap" id="presets-r"></div>
+  <div class="note"><b>Equations used.</b><div class="eq" id="eqs"></div></div>
+  <div class="g2">
+   <div>
+    <h3>Model parameters (editable)</h3>
+    <p class="xs mu">Hypothetical educational assumptions, not verified Capital One costs or measured control effectiveness. Invalid values are rejected.</p>
+    <div class="scroll"><table id="par-t"></table></div>
+    <div class="row gap"><button class="btn sec sm" id="btn-defaults" data-lock type="button">Restore default assumptions</button></div>
+   </div>
+   <div>
+    <h3>Stage survival funnel</h3>
+    <p class="xs mu">Share of attack attempts that survive each stage with the current controls (analytical).</p>
+    <div id="funnel"></div>
+    <h4>Before and after (analytical expected annual loss)</h4>
+    <div id="ba-chart"></div>
+   </div>
+  </div>
+  <div class="note warn" style="margin-top:12px"><b>Disclosure.</b> The $270M SLE is a proxy built from the OCC penalty ($80M) and class-action settlement ($190M). It is not verified total incident loss. The attack rate of 0.05 per year, every pass probability, factor and cost are illustrative assumptions.</div>
+ </div>
+
+ <div class="card">
+  <div class="hd"><h2>5×5 risk assessment matrix</h2><span class="tag">Risk score = Likelihood × Impact</span></div>
+  <div class="legend"><span><span class="sw-box r-Low"></span>Low 1–4</span><span><span class="sw-box r-Medium"></span>Medium 5–9</span><span><span class="sw-box r-High"></span>High 10–14</span><span><span class="sw-box r-Critical"></span>Critical 15–25</span><span><span class="chip">F2</span> model-derived</span><span><span class="chip q">F1</span> qualitative judgement</span></div>
+  <div class="g2">
+   <div><h3>Inherent risk (no controls)</h3><div id="mx-inh"></div></div>
+   <div><h3>Residual risk (current controls)</h3><div id="mx-res"></div></div>
+  </div>
+ </div>
+
+ <div class="card">
+  <h2>Risk register</h2>
+  <div class="scroll"><table id="reg-t"></table></div>
+  <div class="note"><b>Model-generated, not historical.</b> All likelihood, impact and score values are illustrative outputs of this model. What is historical is only the existence of the weaknesses, as described in public records. See the audit findings tab for evidence basis.</div>
+  <details><summary><b>How the scores are derived (no arbitrary reductions)</b></summary>
+   <div class="sm" id="derive"></div>
+  </details>
+ </div>
+</section>
+
+<!-- MC -->
+<section class="panel" id="tab-mc" role="tabpanel" aria-labelledby="t-mc" hidden>
+ <div class="card">
+  <div class="hd"><h2>Monte Carlo analysis: 10,000 simulated years</h2><span id="cfg-name-m" class="pill p-in"></span></div>
+  <p class="sm mu">Attack arrivals per year follow a Poisson distribution with mean equal to the attack-frequency assumption. Each simulated attempt passes each active control with the same probability used in the analytical ALE model. Simulated attempts are model draws, not historical attacks.</p>
+  <div class="row gap">
+   <label class="sm" for="seed"><b>Random seed</b> (optional)</label>
+   <input type="text" id="seed" maxlength="40" placeholder="blank = new random seed" data-lock style="width:220px">
+   <button class="btn" id="btn-mc" data-lock type="button">Run 10,000 years</button>
+  </div>
+  <div class="note stale" id="mc-stale"></div>
+  <div id="mc-out"><p class="mu">Not run yet. Choose a configuration, then press “Run 10,000 years”.</p></div>
+ </div>
+</section>
+
+<!-- AUDIT -->
+<section class="panel" id="tab-audit" role="tabpanel" aria-labelledby="t-audit" hidden>
+ <div class="card">
+  <div class="hd"><h2>Audit findings dashboard</h2><span id="cov" class="pill p-in"></span></div>
+  <div class="note warn"><b>Evidence boundary.</b> This lab has no access to Capital One's internal audit records. The findings are an educational reconstruction from public sources (DOJ complaint, company statements, OCC and Federal Reserve actions). Severity ratings are the audit-style ratings carried over from the original lab. P1 is a process item added in this upgrade to represent the Monitor and Review stages of the SRMP lifecycle.</div>
+  <div class="scroll"><table id="aud-t"></table></div>
+ </div>
+ <div class="card" id="aud-detail"></div>
+ <div class="card">
+  <h2>F6 in context: encryption at rest vs minimisation and tokenisation</h2>
+  <div class="scroll"><table>
+   <tr><th>Question</th><th>Encryption at rest (SSE)</th><th>Minimisation + tokenisation (Control E)</th></tr>
+   <tr><td>Protects against stolen disks or unauthorised storage access</td><td>Yes</td><td>Yes</td></tr>
+   <tr><td>Stops an authorised but compromised identity from reading data</td><td>Not by itself: decryption is transparent to a principal allowed to read and use the key</td><td>Largely: the role sees tokens or no data; detokenisation is a separate, tightly controlled service</td></tr>
+   <tr><td>Reduces what is lost if the data is stolen</td><td>No</td><td>Yes: less data held, and stolen tokens have little value</td></tr>
+   <tr><td>Modelled in this lab</td><td>Not modelled</td><td>Damage factor 0.5 (illustrative assumption)</td></tr>
+  </table></div>
+ </div>
+</section>
+
+<!-- REPORT -->
+<section class="panel" id="tab-report" role="tabpanel" aria-labelledby="t-report" hidden>
+ <div class="card noprint">
+  <div class="hd"><h2>Simulation report</h2></div>
+  <p class="sm mu">Generates a snapshot of the current configuration and results. Attack-chain and Monte Carlo sections appear only if you have run them; nothing is invented.</p>
+  <div class="row"><button class="btn" id="btn-gen" type="button">GENERATE SIMULATION REPORT</button>
+   <button class="btn sec" id="btn-csv" type="button" disabled>Download CSV</button>
+   <button class="btn sec" id="btn-html" type="button" disabled>Download HTML report</button>
+   <button class="btn sec" id="btn-print" type="button" disabled>Print / Save as PDF</button>
+   <button class="btn sec" id="btn-copy" type="button" disabled>Copy summary</button></div>
+  <div class="note warn stale" id="rep-stale">The configuration or results have changed since this report was generated. Generate it again to refresh.</div>
+  <textarea id="copybox" class="sr" aria-hidden="true" tabindex="-1"></textarea>
+ </div>
+ <div id="rep-out" class="rep"><p class="mu">No report generated yet.</p></div>
+</section>
+</main>
+
+<!-- PRESENTATION -->
+<div id="pres" class="pres" hidden role="dialog" aria-modal="true" aria-label="Presentation mode">
+ <div class="pres-top"><h2 id="pres-title"></h2><div class="row"><span class="xs" id="pres-time"></span><span class="status"><span class="dot" id="pdot"></span><span id="ptxt"></span></span><button class="btn ghost sm" id="pres-exit" type="button">Exit (Esc)</button></div></div>
+ <div class="pres-body" id="pres-body"></div>
+ <div class="pres-nav"><button class="btn sec" id="pres-prev" type="button">Back</button><div class="dots" id="pres-dots"></div><div class="row"><button class="btn sec sm" id="pres-notes-btn" type="button" aria-pressed="false">Speaker notes</button><button class="btn" id="pres-next" type="button">Next</button></div></div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script>
+(function(){
+'use strict';
+var $=function(s,r){return (r||document).querySelector(s)};
+var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
+var esc=function(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})};
+var clone=function(o){return JSON.parse(JSON.stringify(o))};
+var sleep=function(ms){return new Promise(function(r){setTimeout(r,ms)})};
+var FAST=/[?&]speed=fast/.test(location.search);
+var STEP_MS=FAST?60:700;
+
+/* ================= CONSTANTS AND MODEL ================= */
+var REC=106,OCC=80,CCS=190,PROXY=OCC+CCS,NYEARS=10000;
+var DEF={aro:0.05,sle:PROXY,p:{A:.4,B:.3,C:.4},F:.4,M:.5,cost:{A:.2,B:.1,C:.5,D:.6,E:.6}};
+var S=clone(DEF);S.on={A:0,B:0,C:0,D:0,E:0};
+var mode='model',seedTxt='',repCount=0;
+
+var CT=[
+{id:'A',n:'WAF hardening and SSRF prevention',stage:2,f:'F2',par:'p.A',pl:'Pass probability when active',
+ ex:'Hardens the web application firewall and the application so that user-supplied URLs cannot be turned into requests to internal systems (server-side request forgery, SSRF).',
+ bl:['Validate user-controlled URLs against an allow-list','Deny requests to loopback, private and link-local addresses, including 169.254.169.254','Apply network egress restrictions from the application tier','Demonstrates SSRF prevention at stage 2'],
+ why:'The hardened WAF and application validate the destination of the user-controlled URL against an allow-list and deny internal, loopback and link-local addresses (including the metadata address 169.254.169.254). The SSRF payload is rejected before it can reach any internal service.',
+ probe:['GET /fetch?url=http://169.254.169.254/latest/meta-data/iam/security-credentials/','OFF → 200 OK  (simulated: request relayed to internal address)','ON  → 403 Forbidden  (simulated: destination in blocked range 169.254.0.0/16)']},
+{id:'B',n:'IMDSv2 enforcement',stage:3,f:'F3',par:'p.B',pl:'Pass probability when active',
+ ex:'Instance Metadata Service version 2 requires a session token, obtained with an HTTP PUT request, before credentials can be read. A simple GET relayed through an SSRF flaw carries no token and is rejected.',
+ bl:['Session-token-based metadata protection','Token-less requests are rejected (HTTP 401)','Note: AWS introduced IMDSv2 in late 2019, after the March 2019 breach, so this control is a counterfactual, not something Capital One could have enabled at the time']
+ ,why:'IMDSv2 requires a session token created by a PUT request. The relayed token-less GET returns HTTP 401, so no temporary credentials are issued. IMDSv2 was introduced by AWS after the 2019 breach; here it is a what-if control.',
+ probe:['GET /latest/meta-data/iam/security-credentials/<role>   (no token header)','OFF (IMDSv1 behaviour) → 200 OK  (simulated: dummy credentials returned)','ON  (IMDSv2 required)  → 401 Unauthorized  (simulated: session token required)']},
+{id:'C',n:'Least-privilege IAM',stage:4,f:'F4',par:'p.C',pl:'Pass probability when active',
+ ex:'Reduces the role to only the permissions the application genuinely needs, so stolen role credentials cannot enumerate or read unrelated S3 buckets.',
+ bl:['Restrict IAM permissions to named resources and actions','Prevent unnecessary S3 listing and reading','Demonstrates AccessDenied responses'],
+ why:'The role policy grants no s3:ListAllMyBuckets or s3:GetObject on unrelated buckets. The stolen credentials return AccessDenied, so the attacker cannot enumerate or read the data.',
+ probe:['aws s3 ls   (using the role\'s temporary credentials, dummy account)','OFF → 12 buckets listed  (simulated)','ON  → AccessDenied: role is not authorised to perform s3:ListAllMyBuckets  (simulated)']},
+{id:'D',n:'Anomaly detection and alerting',stage:5,f:'F5',par:'F',pl:'Exposure factor (share of data copied)',
+ ex:'Monitors storage access for unusual bulk reads, raises an alert and triggers containment (for example revoking the session) before all data is copied.',
+ bl:['Detects unusual bulk S3 access','Generates an alert to the security operations team','Demonstrates containment of the session','The 40% exposure factor is an illustrative model parameter, not a measured historical result'],
+ why:'',probe:['Bulk GetObject burst from one role session (dummy bucket)','OFF → no alert; copy completes (simulated)','ON  → ALERT: abnormal S3 read volume; session revoked after the exposure-factor share is copied (simulated)']},
+{id:'E',n:'Data minimisation and tokenisation',stage:5,f:'F6',par:'M',pl:'Damage factor (share of damage remaining)',
+ ex:'Holds less sensitive data and replaces what remains with tokens, so stolen records are less damaging. Encryption at rest alone does not stop an authorised but compromised identity: the storage service decrypts transparently for any principal permitted to read and use the key.',
+ bl:['Reduces sensitive data exposure','Encryption at rest protects media and unauthorised storage access, not a compromised authorised role','The 50% damage reduction is an illustrative assumption'],
+ why:'',probe:['Read record #0001 (dummy data)','OFF → name, address, 9-digit ID in plaintext (simulated)','ON  → name, address, tok_7f3a9c… (simulated: token, not the real identifier)']}
+];
+var CTM={};CT.forEach(function(c){CTM[c.id]=c});
+
+var STG=[
+{n:'RECONNAISSANCE',t:'Find an exposed application',act:'Attacker identifies an internet-accessible application behind the WAF.',vul:'Public attack surface with a misconfigured WAF.',weak:'Exposure was not reviewed against a cloud risk baseline.',def:'No technical control modelled here (governance, see F1).',find:'F1',ctrl:null,
+ ok:'Application behind the WAF is reachable from the internet.'},
+{n:'SSRF EXPLOITATION',t:'Send an SSRF request',act:'A crafted request makes the application fetch an internal address.',vul:'Server-side request forgery through the misconfigured WAF/application.',weak:'No URL validation, internal addresses not blocked.',def:'Control A: WAF hardening and SSRF prevention.',find:'F2',ctrl:'A',
+ ok:'SSRF payload accepted by the misconfigured WAF.'},
+{n:'CREDENTIAL EXPOSURE',t:'Read temporary credentials',act:'Request to the metadata service returns simulated temporary role credentials.',vul:'Metadata service answers token-less requests (IMDSv1 behaviour).',weak:'Credentials reachable from application-level requests.',def:'Control B: IMDSv2 enforcement.',find:'F3',ctrl:'B',
+ ok:'Metadata service returns temporary role credentials (no token needed).'},
+{n:'IAM PRIVILEGE ABUSE',t:'Use the role against S3',act:'The simulated role lists and reads S3 buckets.',vul:'Role has permissions beyond what the application needs.',weak:'Over-privileged IAM role.',def:'Control C: least-privilege IAM.',find:'F4',ctrl:'C',
+ ok:'Role lists and reads S3 buckets (over-privileged).'},
+{n:'DATA EXFILTRATION',t:'Copy the data out',act:'Simulated customer records are accessed and copied.',vul:'No timely detection of bulk reads; sensitive data readable by the role.',weak:'Detection gap and insufficient data minimisation.',def:'Controls D (detection) and E (tokenisation).',find:'F5, F6',ctrl:'DE',
+ ok:'Bulk copy of dummy customer records begins.'}
+];
+var GATE={1:'A',2:'B',3:'C'};/* stage index -> control */
+
+function getP(k){var a=k.split('.');return a.length===2?S[a[0]][a[1]]:S[k]}
+function setP(k,v){var a=k.split('.');if(a.length===2)S[a[0]][a[1]]=v;else S[k]=v}
+var RANGE={aro:[.001,5],sle:[1,5000],'p.A':[0,1],'p.B':[0,1],'p.C':[0,1],F:[0,1],M:[0,1]};
+CT.forEach(function(c){RANGE['cost.'+c.id]=[0,100]});
+
+function calc(on,P){
+ P=P||S;
+ var pA=on.A?P.p.A:1,pB=on.B?P.p.B:1,pC=on.C?P.p.C:1,pass=pA*pB*pC,f=on.D?P.F:1,m=on.E?P.M:1;
+ var perAttack=pass*f*m*P.sle,base=P.aro*P.sle,ale=P.aro*perAttack,cost=0;
+ CT.forEach(function(c){if(on[c.id])cost+=P.cost[c.id]});
+ var red=base-ale;
+ return {pA:pA,pB:pB,pC:pC,pass:pass,f:f,m:m,fm:f*m,lossBreach:P.sle*f*m,perAttack:perAttack,base:base,ale:ale,cost:cost,red:red,
+  redPct:base>0?red/base*100:0,rosi:cost>0?(red-cost)/cost*100:null,rate:P.aro*pass,pBreach:1-Math.exp(-P.aro*pass),on:clone(on)};
+}
+function only(id){var o={A:0,B:0,C:0,D:0,E:0};o[id]=1;return o}
+var NONE={A:0,B:0,C:0,D:0,E:0};
+
+/* formatting */
+function fm(x){return '$'+Number((+x).toPrecision(4))+'M'}
+function fp(x,d){return (+x).toFixed(d==null?1:d)+'%'}
+function fr(x){return x==null?'n/a (no cost)':(+x).toLocaleString('en-US',{maximumFractionDigits:1})+'%'}
+function fn(x){return (+x).toLocaleString('en-US')}
+function presetKey(){return CT.filter(function(c){return S.on[c.id]}).map(function(c){return c.id}).join('')}
+function presetName(){var k=presetKey();return k===''?'Baseline attack scenario':k==='ABC'?'Preventive controls (A–C)':k==='ABCDE'?'Full defence (A–E)':'Custom ('+k.split('').join(', ')+')'}
+function cfgKey(){return JSON.stringify([S.on,S.aro,S.sle,S.p,S.F,S.M,S.cost])}
+
+/* ================= RISK REGISTER ================= */
+function lScore(p){return p<.01?1:p<.10?2:p<.25?3:p<.50?4:5}
+function iScore(l){return l<1?1:l<10?2:l<50?3:l<150?4:5}
+function lvl(s){return s<=4?'Low':s<=9?'Medium':s<=14?'High':'Critical'}
+var LN=['','Rare','Unlikely','Possible','Likely','Almost Certain'],IN=['','Insignificant','Minor','Moderate','Major','Severe'];
+
+var FIND=[
+{id:'F1',title:'Inadequate cloud risk governance',desc:'Cloud migration without an effective, cloud-specific risk assessment.',sev:'Critical',ctl:null,w:3,q:[4,5],
+ treat:'Mitigate: establish a cloud risk framework, control baselines and an architecture-review gate before migration.',
+ obs:'The move of workloads to the public cloud proceeded without an effective risk assessment covering cloud-specific threats such as SSRF, metadata exposure and IAM over-permissioning.',
+ ev:'The OCC enforcement action of August 2020 described ineffective risk assessment processes before the cloud migration. This is a regulatory observation, not an internal audit record available to this lab.',
+ root:'Governance and risk processes did not keep pace with the migration; the shared-responsibility model was not fully translated into concrete controls and ownership.',
+ risk:'Systemic: technical weaknesses F2 to F6 are not identified or prioritised.',
+ imp:'Regulatory enforcement, remediation programme cost, reputational damage.',
+ rec:'Adopt a cloud risk assessment methodology, mandatory control baselines (for example CIS AWS Foundations), ownership per workload and a pre-production architecture review gate.',
+ ver:'Review documented cloud risk assessments and approvals for a sample of workloads; test them against the baseline; confirm risk acceptances are signed by the risk owner.'},
+{id:'F2',title:'WAF misconfiguration and SSRF',desc:'WAF and application allowed requests to internal addresses.',sev:'Critical',ctl:'A',w:3,
+ treat:'Mitigate: Control A (URL validation, internal-address deny, egress restriction).',
+ obs:'A web application behind a misconfigured WAF could be induced to send requests to internal addresses (SSRF).',
+ ev:'The 2019 US DOJ criminal complaint describes a misconfigured web application firewall that allowed commands to reach the instance metadata service.',
+ root:'Over-permissive WAF configuration, no destination allow-listing, no egress filtering from the application tier.',
+ risk:'An internet attacker pivots into internal cloud interfaces.',
+ imp:'Foothold for credential theft; start of the full attack chain.',
+ rec:'Harden WAF rules, validate and allow-list user-supplied URLs, block link-local and private ranges, restrict egress.',
+ ver:'In an authorised test environment, submit SSRF test cases targeting 169.254.169.254, loopback and RFC 1918 ranges; expect denial and a log entry. Review WAF rule set and change history.'},
+{id:'F3',title:'Metadata credential exposure',desc:'Metadata service returned role credentials to token-less requests.',sev:'High',ctl:'B',w:2,
+ treat:'Mitigate: Control B (require IMDSv2, hop limit 1).',
+ obs:'The instance metadata service returned temporary role credentials to a simple request relayed by the application.',
+ ev:'The DOJ complaint states that credentials for the instance role were obtained through the metadata service. AWS later (2019) introduced IMDSv2 as a session-token-based mitigation.',
+ root:'IMDSv1 behaviour: no session token required; a powerful role was attached to an internet-facing instance.',
+ risk:'Any SSRF becomes credential theft.',
+ imp:'Attacker obtains valid cloud credentials.',
+ rec:'Require IMDSv2 (HttpTokens=required), set a hop limit of 1, remove unnecessary instance roles.',
+ ver:'Check the AWS Config rule for IMDSv2 across instances; in a test account confirm a token-less metadata request returns 401.'},
+{id:'F4',title:'Excessive IAM permissions',desc:'Role could list and read many S3 buckets beyond its need.',sev:'Critical',ctl:'C',w:3,
+ treat:'Mitigate: Control C (least privilege, permission boundaries, bucket policies).',
+ obs:'The WAF role had permissions to list buckets and read objects well beyond what its function required.',
+ ev:'The DOJ complaint and public reporting describe the role being used to list and copy data from many storage buckets.',
+ root:'Permissions granted broadly and not periodically reviewed.',
+ risk:'Stolen credentials give access to a large data estate.',
+ imp:'Scale of the breach is set by the role\'s reach.',
+ rec:'Scope the role to named resources and actions, use permission boundaries, review with IAM Access Analyzer, add resource policies.',
+ ver:'Run the IAM policy simulator for the role: s3:ListAllMyBuckets and s3:GetObject on unrelated buckets must be denied.'},
+{id:'F5',title:'Insufficient timely detection',desc:'Bulk data access was not detected for about four months.',sev:'High',ctl:'D',w:2,
+ treat:'Mitigate: Control D (alerting and containment). Transfer part of the residual through insurance if appropriate.',
+ obs:'The intrusion was identified after an external tip about four months after the data was taken, not by internal monitoring.',
+ ev:'Public timeline: attack 22–23 March 2019, external tip 17 July 2019. The OCC action described deficiencies in areas including alerting and response.',
+ root:'No effective baseline or alerting for unusual bulk object reads by a role session.',
+ risk:'Attackers can complete exfiltration and remain undetected.',
+ imp:'Larger exposure, late notification, higher regulatory and legal cost.',
+ rec:'Enable storage data-event logging, threat detection for storage, volume baselines per role, automated session revocation and an incident runbook.',
+ ver:'Run an authorised exercise that bulk-reads a dummy bucket; confirm an alert within the target detection time and measure time to containment.'},
+{id:'F6',title:'Insufficient data minimisation',desc:'Sensitive data readable by the compromised authorised role.',sev:'Medium',ctl:'E',w:1,
+ treat:'Mitigate: Control E (minimise, tokenise, restrict detokenisation).',
+ obs:'Large volumes of customer data were readable by the role that was compromised.',
+ ev:'Public reporting indicates data was accessible to the role despite encryption at rest, consistent with transparent decryption for authorised principals.',
+ root:'More sensitive data retained than needed; protection relied on storage encryption.',
+ risk:'A compromised authorised identity reads sensitive plaintext.',
+ imp:'Higher harm to individuals and higher regulatory exposure per record.',
+ rec:'Minimise retention, tokenise sensitive fields, separate and tightly control detokenisation, use field-level encryption where needed.',
+ ver:'Sample stored records: sensitive fields should be tokens or absent; confirm the application role cannot call detokenisation.'},
+{id:'F7',title:'Internal audit and governance weaknesses',desc:'Audit and governance did not surface or escalate the gaps.',sev:'High',ctl:null,w:2,q:[3,4],
+ treat:'Mitigate: strengthen internal audit coverage of cloud and track findings to closure.',
+ obs:'Internal audit and governance processes did not identify and escalate the control gaps behind F1 to F6.',
+ ev:'The OCC action of August 2020 described internal audit as an area requiring improvement. This lab holds no internal audit reports.',
+ root:'Audit plans and skills not aligned to cloud risks; weak follow-up of findings.',
+ risk:'Control weaknesses persist undetected.',
+ imp:'Regulatory criticism and repeated findings.',
+ rec:'Risk-based cloud audit plan, skilled auditors, finding tracking with owners and dates, board-level reporting.',
+ ver:'Review the audit plan and issue tracker: cloud areas covered, finding ageing, evidence of closure testing.'},
+{id:'P1',title:'Monitoring and periodic risk review (process)',desc:'Process item: continuous monitoring and re-assessment after change.',sev:'Advisory',ctl:null,w:0,proc:true,
+ treat:'Mitigate: operate the Monitor and Review stages of the SRMP lifecycle.',
+ obs:'Added by this lab as a process item. Risk results go stale as the environment, threats and controls change.',
+ ev:'SRMP methodology (Monitor and Review stages). It is not a Capital One finding and no historical evidence is claimed.',
+ root:'One-off assessments are not refreshed.',
+ risk:'Residual risk drifts upward unnoticed.',
+ imp:'Controls decay; assumptions in this model become outdated.',
+ rec:'Define key risk indicators, re-run the assessment after every control or architecture change, review assumptions against real incident and cost data at least annually.',
+ ver:'Check that risk register reviews are dated, that KRIs are reported, and that control tests are repeated on a schedule.'}
+];
+var FM={};FIND.forEach(function(f){FM[f.id]=f});
+
+function riskOf(f,on){
+ if(f.proc)return null;
+ if(f.q){var s=f.q[0]*f.q[1];return {L:f.q[0],I:f.q[1],s:s,lv:lvl(s),q:true,p:null,loss:null}}
+ var c=calc(on),pi,loss;
+ if(f.id==='F2'){pi=c.pA;loss=S.sle*c.f*c.m}
+ else if(f.id==='F3'){pi=c.pA*c.pB;loss=S.sle*c.f*c.m}
+ else if(f.id==='F4'){pi=c.pass;loss=S.sle*c.f*c.m}
+ else if(f.id==='F5'){pi=c.pass;loss=S.sle*c.f}
+ else{pi=c.pass;loss=S.sle*c.m}
+ var p=1-Math.exp(-S.aro*pi),L=lScore(p),I=iScore(loss),sc=L*I;
+ return {L:L,I:I,s:sc,lv:lvl(sc),q:false,p:p,loss:loss};
+}
+function status(f){
+ if(f.proc)return {t:'Process item (not modelled)',c:'p-in'};
+ if(f.ctl)return S.on[f.ctl]?{t:'Remediated in model by '+f.ctl,c:'p-ok'}:{t:'Open',c:'p-bad'};
+ return {t:'Open: governance (not modelled)',c:'p-wn'};
+}
+function coverage(){var g=0,t=0;FIND.forEach(function(f){if(f.ctl){t+=f.w;if(S.on[f.ctl])g+=f.w}});return {g:g,t:t,pct:Math.round(g/t*100)}}
+function regRows(){return FIND.filter(function(f){return !f.proc}).map(function(f){return {f:f,i:riskOf(f,NONE),r:riskOf(f,S.on)}})}
+function maxRes(){var m=null;regRows().forEach(function(x){if(!m||x.r.s>m.s)m=x.r});return m}
+
+/* ================= STATE: RUN / MC / REPORT ================= */
+var busy=false,tokRep=0;
+var run=null;        /* last attack replay */
+var stages=[];       /* live stage states */
+var verif={};        /* control verification */
+var mcRes=null;
+var report=null;
+var selF='F2';
+var ver=0;
+
+function freshStages(){stages=STG.map(function(){return {s:'waiting',note:''}})}
+freshStages();
+
+/* ================= RNG ================= */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function hashSeed(s){var h=2166136261;s=String(s);for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
+function pois(l,rnd){var L=Math.exp(-l),k=0,p=1;do{k++;p*=rnd()}while(p>L);return k-1}
+
+/* ================= MONTE CARLO ================= */
+function simulate(on,seed,N){
+ var ra=mulberry32(hashSeed(seed+'|arrivals')),rc=mulberry32(hashSeed(seed+'|controls'));
+ var lossEv=S.sle*(on.D?S.F:1)*(on.E?S.M:1);
+ var att=0,b2=0,b3=0,b4=0,br=0,yb=0,sum=0,sq=0,ls=new Float64Array(N),bk=[0,0,0,0],flags=[],maxK=0;
+ for(var y=0;y<N;y++){
+  var n=pois(S.aro,ra),k=0;att+=n;
+  for(var j=0;j<n;j++){
+   if(on.A&&rc()>=S.p.A){b2++;continue}
+   if(on.B&&rc()>=S.p.B){b3++;continue}
+   if(on.C&&rc()>=S.p.C){b4++;continue}
+   k++;
+  }
+  br+=k;var l=k*lossEv;ls[y]=l;sum+=l;sq+=l*l;if(k>0)yb++;bk[Math.min(k,3)]++;if(k>maxK)maxK=k;
+  if(y<100)flags.push(k);
+ }
+ ls.sort();
+ var mean=sum/N,v=Math.max(0,(sq/N-mean*mean)*N/(N-1)),sd=Math.sqrt(v);
+ function q(p){return ls[Math.min(N-1,Math.ceil(p*N)-1)]}
+ return {N:N,att:att,b2:b2,b3:b3,b4:b4,br:br,yb:yb,mean:mean,sd:sd,se:sd/Math.sqrt(N),p95:q(.95),p999:q(.999),max:ls[N-1],bk:bk,flags:flags,lossEv:lossEv,maxK:maxK};
+}
+
+/* ================= UI HELPERS ================= */
+function toast(t){var e=$('#toast');e.textContent=t;e.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(function(){e.hidden=true},2600)}
+function setStatus(kind,t){['#sdot','#pdot'].forEach(function(s){$(s).className='dot '+kind});$('#stxt').textContent=t;$('#ptxt').textContent=t}
+function kpi(l,v,s,cls){return '<div class="kpi '+(cls||'')+'"><div class="l">'+l+'</div><div class="v">'+v+'</div>'+(s?'<div class="s">'+s+'</div>':'')+'</div>'}
+function levelTag(l){return '<span class="lv r-'+l+'">'+l+'</span>'}
+function hbars(rows,max){
+ var mx=max||Math.max.apply(null,rows.map(function(r){return r.v}).concat([1e-12]));
+ return rows.map(function(r){return '<div class="hb"><div>'+r.l+'</div><div class="tr"><i class="'+(r.c||'')+'" style="width:'+Math.max(0,Math.min(100,r.v/mx*100)).toFixed(2)+'%"></i></div><div class="hv">'+r.t+'</div></div>'}).join('');
+}
+
+/* ================= ARCHITECTURE SVG ================= */
+function archSVG(id){
+ var N=[['Internet','Attacker / users',10],['WAF','Web app firewall',180],['EC2 application','Web application',350],['Metadata','169.254.169.254',520],['IAM role','Instance role',690],['S3 storage','Dummy data',860]];
+ var y=100,w=110,h=72,s='<svg viewBox="0 0 1000 310" role="img" aria-label="Architecture: Internet to WAF to EC2 application to metadata service to IAM role to S3 storage, with controls A to E and attack stages 1 to 5"><defs><marker id="ar'+id+'" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="context-stroke"/></marker></defs>';
+ s+='<rect class="bnd out" x="2" y="52" width="146" height="196" rx="10"/><text class="bl" x="12" y="70">UNTRUSTED</text>';
+ s+='<rect class="bnd in" x="160" y="30" width="836" height="270" rx="10"/><text class="bl" x="172" y="48">AWS ACCOUNT · TRUST BOUNDARY</text>';
+ s+='<rect class="bnd" x="334" y="66" width="344" height="150" rx="10"/><text class="bl" x="344" y="208">EC2 HOST BOUNDARY</text>';
+ var E=[[120,y+36,180,y+36,'s1'],[290,y+36,350,y+36,'s2'],[460,y+36,520,y+36,'s3'],[630,y+36,690,y+36,'s3'],[800,y+36,860,y+36,'s4']];
+ E.forEach(function(e,i){s+='<line class="edge" data-edge="'+i+'" data-st="'+e[4]+'" x1="'+e[0]+'" y1="'+e[1]+'" x2="'+e[2]+'" y2="'+e[3]+'" marker-end="url(#ar'+id+')"/>'});
+ s+='<path class="edge" data-edge="5" data-st="s5" d="M915 '+(y+h)+' V268 H65 V'+(y+h+2)+'" marker-end="url(#ar'+id+')"/>';
+ N.forEach(function(n,i){s+='<g class="node" data-node="'+i+'"><rect x="'+n[2]+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="9"/><text class="nt" x="'+(n[2]+w/2)+'" y="'+(y+31)+'" text-anchor="middle">'+n[0]+'</text><text class="ns" x="'+(n[2]+w/2)+'" y="'+(y+49)+'" text-anchor="middle">'+n[1]+'</text></g>'});
+ [[1,155,y+36],[2,325,y+36],[3,495,y+36],[4,835,y+36],[5,490,268]].forEach(function(b){s+='<g class="sb"><circle cx="'+b[1]+'" cy="'+(b[2]-(b[0]===5?0:22))+'" r="11"/><text x="'+b[1]+'" y="'+(b[2]-(b[0]===5?0:22)+4)+'">'+b[0]+'</text></g>'});
+ [['A',235,'block SSRF'],['B',575,'IMDSv2'],['C',745,'least priv.'],['D',878,'detect'],['E',950,'tokenise']].forEach(function(c){
+  var cy=y+h+30;
+  s+='<g class="cb" data-badge="'+c[0]+'"><circle cx="'+c[1]+'" cy="'+cy+'" r="14"/><text class="cl" x="'+c[1]+'" y="'+(cy+4.5)+'">'+c[0]+'</text><text class="cc" x="'+c[1]+'" y="'+(cy+28)+'">'+c[2]+'</text></g>';
+ });
+ s+='<text class="ns" style="font-size:10.5px;fill:var(--mu)" x="520" y="288">Exfiltration path back to the attacker (stage 5)</text></svg>';
+ return s;
+}
+function paintArch(){
+ $$('.cb').forEach(function(g){g.classList.toggle('on',!!S.on[g.getAttribute('data-badge')])});
+ var nodeHit={},nodeBlk={},edge={};
+ var succ={0:[1],1:[2],2:[3,4],3:[5],4:[5]},blkN={1:[1],2:[3],3:[4]},edgeOf={0:[0],1:[1],2:[2,3],3:[4],4:[5]};
+ stages.forEach(function(st,i){
+  var cls=st.s==='attacking'?'act':st.s==='blocked'?'blk':(st.s==='success'||st.s==='detected'||st.s==='mitigated')?'ok':'';
+  (edgeOf[i]||[]).forEach(function(e){edge[e]=cls});
+  if(cls==='ok')(succ[i]||[]).forEach(function(n){nodeHit[n]=1});
+  if(st.s==='blocked')(blkN[i]||[]).forEach(function(n){nodeBlk[n]=1});
+ });
+ $$('[data-edge]').forEach(function(e){e.setAttribute('class','edge '+(edge[e.getAttribute('data-edge')]||''))});
+ $$('[data-node]').forEach(function(n){var k=n.getAttribute('data-node');n.setAttribute('class','node'+(nodeBlk[k]?' blk':nodeHit[k]?' hit':''))});
+}
+
+/* ================= ATTACK CHAIN ================= */
+var STLAB={waiting:['○','Waiting'],attacking:['▶','Attacking'],success:['✕','Successful'],blocked:['⛨','Blocked'],detected:['◉','Detected'],mitigated:['✓','Mitigated']};
+function chainHTML(full){
+ return STG.map(function(s,i){
+  return '<div class="stage st-waiting" data-stage="'+i+'"><div class="sn">STAGE '+(i+1)+' · '+s.n+'</div><div class="st">'+s.t+'</div>'+
+  (full?'<dl><dt>Attack activity</dt><dd>'+s.act+'</dd><dt>Vulnerability</dt><dd>'+s.vul+'</dd><dt>Security weakness</dt><dd>'+s.weak+'</dd><dt>Relevant defence</dt><dd>'+s.def+'</dd><dt>Audit finding</dt><dd>'+s.find+'</dd></dl>':'')+
+  '<div class="sdef xs mu" style="margin-top:6px"></div><div class="state"></div><div class="snote"></div></div>';
+ }).join('');
+}
+function paintChain(){
+ $$('.stage').forEach(function(el){
+  var i=+el.getAttribute('data-stage'),st=stages[i],d=STG[i];
+  el.className='stage st-'+st.s;
+  var l=STLAB[st.s];
+  $('.state',el).innerHTML='<span aria-hidden="true">'+l[0]+'</span><span>'+l[1]+'</span>';
+  $('.snote',el).textContent=st.note||'';
+  var ch=d.ctrl?d.ctrl.split('').map(function(c){return (S.on[c]?'🛡 '+c+' active':c+' inactive')}).join(' · '):'No control at this stage';
+  $('.sdef',el).textContent=ch;
+ });
+ var done=stages.filter(function(s){return s.s==='success'||s.s==='detected'||s.s==='mitigated'}).length;
+ $$('.pbar').forEach(function(b){b.style.width=(done*20)+'%'});
+ paintArch();
+}
+function logTo(t,k){$$('.logbox').forEach(function(b){var d=document.createElement('div');if(k)d.className=k;d.textContent='› '+t;b.appendChild(d);b.scrollTop=1e5})}
+var lastOut={t:'Press “Launch attack”.',k:''},lastWhy='';
+function setOut(t,k){lastOut={t:t,k:k||''};$$('.outbox').forEach(function(o){o.className='out outbox '+(k||'');o.textContent=t})}
+function setWhy(t){lastWhy=t||'';$$('.why-wrap').forEach(function(w){if(t){w.hidden=false;w.innerHTML='<b>Why it was blocked:</b> '+esc(t)}else{w.hidden=true;w.innerHTML=''}})}
+function clearRun(){tokRep++;run=null;freshStages();$$('.logbox').forEach(function(b){b.innerHTML=''});setOut('Press “Launch attack”.','');setWhy('');paintChain()}
+
+function setBusy(b){busy=b;$$('[data-lock]').forEach(function(e){e.disabled=b})}
+async function launch(){
+ if(busy)return;
+ setBusy(true);var tok=++tokRep;
+ freshStages();$$('.logbox').forEach(function(b){b.innerHTML=''});setWhy('');paintChain();
+ setOut('Attack in progress…','wn');setStatus('run','Attack running');
+ var on=clone(S.on),rnd=Math.random;
+ if(seedTxt){repCount++;rnd=mulberry32(hashSeed(seedTxt+'|replay|'+repCount))}
+ var c=calc(on),md=mode;
+ logTo('Simulation started ('+(md==='demo'?'demonstration mode':'model mode')+'; dummy data; no real systems contacted).','i');
+ var res={mode:md,on:on,blockedAt:null,by:null,ts:new Date()};
+ for(var i=0;i<5;i++){
+  stages[i]={s:'attacking',note:''};paintChain();
+  await sleep(STEP_MS);if(tok!==tokRep)return;
+  var g=GATE[i],blocked=false;
+  if(g&&on[g]){blocked=md==='demo'?true:rnd()>=S.p[g]}
+  if(blocked){
+   var cc=CTM[g];stages[i]={s:'blocked',note:'Blocked by control '+g};
+   for(var k=i+1;k<5;k++)stages[k]={s:'waiting',note:'Not reached'};
+   paintChain();
+   logTo(cc.why.split('. ')[0].replace(/\.$/,'')+'.','g');logTo('Attack stopped at stage '+(i+1)+' by control '+g+'.','g');
+   setOut('Attack stopped at stage '+(i+1)+' by “'+cc.n+'”. Records exposed: 0. Loss: $0.','ok');
+   setWhy(cc.why);
+   verif[g]={on:true,kind:'ok',t:'Blocked the simulated attack at stage '+(i+1)+' in the last replay.'};
+   res.blockedAt=i+1;res.by=g;res.exposed=0;res.loss=0;run=res;
+   setStatus('ok','Attack blocked at stage '+(i+1)+' by control '+g);setBusy(false);ver++;renderAll();return;
+  }
+  var note='';
+  if(g&&on[g]){note='Control '+g+' bypassed (pass probability '+S.p[g]+')';verif[g]={on:true,kind:'wn',t:'Attack bypassed this control in the last replay (model pass probability '+S.p[g]+').'};logTo('Control '+g+' was bypassed in this run (model probability '+S.p[g]+').','w')}
+  stages[i]={s:'success',note:note};
+  logTo(STG[i].ok,'x');
+  paintChain();
+ }
+ var exposed=REC*c.f,loss=S.sle*c.fm,notes=[];
+ if(on.D){stages[4]={s:'detected',note:'Alert raised; containment after '+Math.round(c.f*100)+'% of data copied'};logTo('Anomaly alert fires; session revoked after '+Math.round(c.f*100)+'% of data is copied (illustrative).','w');verif.D={on:true,kind:'ok',t:'Alert raised; exposure limited to '+Math.round(c.f*100)+'% (illustrative parameter).'}}
+ if(on.E){if(!on.D)stages[4]={s:'mitigated',note:'Damage reduced by '+Math.round((1-c.m)*100)+'%'};else stages[4].note+=' · damage −'+Math.round((1-c.m)*100)+'%';logTo('Tokenised fields reduce the damage by '+Math.round((1-c.m)*100)+'% (illustrative).','w');verif.E={on:true,kind:'ok',t:'Damage factor '+c.m+' applied: loss reduced by '+Math.round((1-c.m)*100)+'% (illustrative).'}}
+ logTo('Breach confirmed.','x');paintChain();
+ var red=c.f<1||c.m<1;
+ setOut('Breach. About '+exposed.toFixed(1).replace(/\.0$/,'')+'M of '+REC+'M records exposed. Estimated loss: '+fm(loss)+(red?' (reduced by detection and/or tokenisation; illustrative).':' (the loss proxy: penalty plus settlement).'),'bad');
+ res.blockedAt=null;res.exposed=exposed;res.loss=loss;run=res;
+ setStatus('bad','Breach: data exfiltrated');setBusy(false);ver++;renderAll();
+}
+
+/* ================= CONTROLS UI ================= */
+function buildControls(){
+ $('#ctrl-list').innerHTML=CT.map(function(c){
+  var lab=c.par==='F'?'Exposure factor':c.par==='M'?'Damage factor':'Pass probability';
+  return '<article class="ctrl" data-c="'+c.id+'"><div class="ctrl-h"><label class="swt"><input type="checkbox" role="switch" data-tog="'+c.id+'" data-lock aria-label="Enable control '+c.id+': '+c.n+'"><span class="tk"></span></label>'+
+  '<div style="flex:1"><h3>'+c.id+' · '+c.n+'</h3><div style="margin-top:4px"><span class="tag">Attack stage '+c.stage+'</span><span class="tag">Audit finding '+c.f+'</span><span class="pill cst"></span></div></div></div>'+
+  '<p class="sm">'+c.ex+'</p><ul>'+c.bl.map(function(b){return '<li>'+b+'</li>'}).join('')+'</ul>'+
+  '<div class="ctrl-p"><label>'+lab+' (0 to 1)<input type="number" step="0.01" min="0" max="1" data-param="'+c.par+'" data-lock></label>'+
+  '<label>Annual cost ($M)<input type="number" step="0.05" min="0" max="100" data-param="cost.'+c.id+'" data-lock></label>'+
+  '<div class="sm eff" style="padding-bottom:8px"></div></div>'+
+  '<div class="ver"><b>Verification result:</b><span class="vtxt"></span><button class="btn sec sm" data-probe="'+c.id+'" type="button">Run mechanism probe</button></div><pre class="probe" data-pout="'+c.id+'"></pre></article>';
+ }).join('');
+}
+function effText(c){
+ var v=getP(c.par);
+ if(c.par==='F')return 'Limits exposure to '+Math.round(v*100)+'% of the data (illustrative, not a measured result).';
+ if(c.par==='M')return 'Leaves '+Math.round(v*100)+'% of the damage, a '+Math.round((1-v)*100)+'% reduction (illustrative).';
+ return 'Blocks '+Math.round((1-v)*100)+'% of attempts at stage '+c.stage+' (assumption).';
+}
+function paintControls(){
+ CT.forEach(function(c){
+  var a=$('.ctrl[data-c="'+c.id+'"]'),on=!!S.on[c.id];
+  a.classList.toggle('on',on);$('[data-tog]',a).checked=on;
+  var p=$('.cst',a);p.textContent=on?'Active':'Inactive';p.className='pill cst '+(on?'p-ok':'p-mu');
+  $('.eff',a).textContent=effText(c);
+  var v=verif[c.id],vt=$('.vtxt',a);
+  if(v&&v.on===on){vt.innerHTML='<span class="pill '+(v.kind==='ok'?'p-ok':v.kind==='wn'?'p-wn':'p-bad')+'">'+(v.kind==='ok'?'Verified':v.kind==='wn'?'Bypassed':'Failed')+'</span> '+esc(v.t)}
+  else vt.innerHTML='<span class="pill p-mu">Not verified</span> '+(on?'Launch an attack or run the probe.':'Control inactive.');
+ });
+}
+function runProbe(id){
+ var c=CTM[id],on=!!S.on[id],pr=c.probe,out=$('[data-pout="'+id+'"]');
+ var line=on?pr[2]:pr[1];
+ if(id==='D'||id==='E'){out.textContent=pr[0]+'\n'+line}else out.textContent=pr[0]+'\n'+line;
+ verif[id]={on:on,kind:on?'ok':'bad',t:on?'Mechanism probe: request rejected, as designed (simulated).':'Mechanism probe: request succeeded because the control is inactive (simulated).'};
+ paintControls();
+}
+
+/* presets */
+var PRESETS=[['','Baseline attack scenario'],['ABC','Preventive controls (A–C)'],['ABCDE','Full defence (A–E)']];
+function presetBtns(){return PRESETS.map(function(p){return '<button class="btn sec sm preset" data-lock data-preset="'+p[0]+'" type="button" aria-pressed="false">'+p[1]+'</button>'}).join('')}
+function applyPreset(k){CT.forEach(function(c){S.on[c.id]=k.indexOf(c.id)>-1?1:0});changed()}
+
+/* params table */
+function buildParams(){
+ var h='<tr><th>Parameter</th><th>Value</th><th>Unit / meaning</th></tr>';
+ h+='<tr><td>Loss proxy (SLE)</td><td><input type="number" step="1" min="1" max="5000" data-param="sle" data-lock aria-label="Loss proxy SLE"></td><td>$M per breach (penalty + settlement proxy)</td></tr>';
+ h+='<tr><td>Attack frequency (ARO before controls)</td><td><input type="number" step="0.01" min="0.001" max="5" data-param="aro" data-lock aria-label="Attack frequency"></td><td>targeted attempts per year</td></tr>';
+ CT.forEach(function(c){
+  var m=c.par==='F'?'Exposure factor (D)':c.par==='M'?'Damage factor (E)':'Pass probability, stage '+c.stage;
+  h+='<tr><td>'+c.id+' · '+c.n+'</td><td><input type="number" step="0.01" min="0" max="1" data-param="'+c.par+'" data-lock aria-label="'+c.id+' effectiveness assumption"></td><td>'+m+'</td></tr>';
+  h+='<tr><td>'+c.id+' annual cost</td><td><input type="number" step="0.05" min="0" max="100" data-param="cost.'+c.id+'" data-lock aria-label="'+c.id+' annual cost"></td><td>$M per year</td></tr>';
+ });
+ $('#par-t').innerHTML=h;
+}
+function syncInputs(){
+ $$('[data-param]').forEach(function(e){
+  if(document.activeElement===e)return;
+  var k=e.getAttribute('data-param'),v=getP(k);
+  if(e.type==='range')e.value=Math.min(+e.max,Math.max(+e.min,v));else e.value=v;
+  e.removeAttribute('aria-invalid');
+ });
+ var sd=$('#seed');if(document.activeElement!==sd)sd.value=seedTxt;
+ $$('.modesel').forEach(function(m){m.value=mode});
+}
+
+/* ================= RENDER ================= */
+function renderKPIs(){
+ var c=calc(S.on),mr=maxRes(),nA=presetKey().length,cv=coverage();
+ $('#kpi-hist').innerHTML=
+  kpi('People affected','≈ 106M','≈100M US and ≈6M Canada (reported)','hist')+
+  kpi('OCC penalty (Aug 2020)','$80M','Civil money penalty','hist')+
+  kpi('Class-action settlement','$190M','Agreed Dec 2021','hist')+
+  kpi('Penalty + settlement','$270M','Loss proxy, not total economic loss','hist')+
+  kpi('Breach to discovery','≈ 4 months','22–23 Mar to 17 Jul 2019 (≈117 days)','hist')+
+  kpi('Audit findings','7 + P1','F1–F7 plus one process item','hist');
+ $('#kpi-sim').innerHTML=
+  kpi('Active controls',nA+' / 5',esc(presetName()),'sim')+
+  kpi('Highest residual risk',mr.s+' · '+levelTag(mr.lv),'Max score in register (model)','sim')+
+  kpi('Residual ALE',fm(c.ale),'Baseline '+fm(c.base),'sim')+
+  kpi('Remediation coverage',cv.pct+'%','Weighted findings remediated (model)','sim');
+ $('#kpi-risk').innerHTML=
+  kpi('Baseline ALE',fm(c.base),'ARO × SLE')+
+  kpi('Residual ALE',fm(c.ale),'With current controls')+
+  kpi('Risk reduction',fp(c.redPct,2),fm(c.red)+' per year')+
+  kpi('Annual control investment',fm(c.cost),'Sum of active controls')+
+  kpi('ROSI',fr(c.rosi),'(Reduction − cost) ÷ cost')+
+  kpi('Highest residual risk',mr.s+' · '+levelTag(mr.lv),'Risk register (model)');
+ ['a','c','r','m'].forEach(function(k){var e=$('#cfg-name-'+k);if(e)e.textContent=presetName()});
+ $('#cfg-list-a').textContent=nA?'Active: '+presetKey().split('').join(', '):'No controls active';
+ $$('.preset').forEach(function(b){b.setAttribute('aria-pressed',String(b.getAttribute('data-preset')===presetKey()))});
+}
+function renderFinance(){
+ var c=calc(S.on);
+ $('#eqs').innerHTML=
+ 'SLE  = Single Loss Expectancy = '+fm(S.sle)+' (loss proxy)<br>ARO  = Annualized Rate of Occurrence (attempts/yr) = '+S.aro+'<br>'+
+ 'Baseline ALE = ARO × SLE = '+S.aro+' × '+S.sle+' = '+fm(c.base)+'<br>'+
+ 'P(pass A,B,C) = '+c.pA+' × '+c.pB+' × '+c.pC+' = '+Number(c.pass.toPrecision(6))+'<br>'+
+ 'Exposure × damage = '+c.f+' × '+c.m+' = '+Number(c.fm.toPrecision(6))+'<br>'+
+ 'Loss per attack = P(pass) × exposure × damage × SLE = '+fm(c.perAttack)+'<br>'+
+ 'Residual ALE = ARO × SLE × P(pass) × exposure × damage = '+fm(c.ale)+'<br>'+
+ 'Risk reduction benefit = Baseline ALE − Residual ALE = '+fm(c.red)+' ('+fp(c.redPct,2)+')<br>'+
+ 'Control cost = '+CT.filter(function(x){return S.on[x.id]}).map(function(x){return S.cost[x.id]}).join(' + ')+(c.cost?'':'0')+' = '+fm(c.cost)+'<br>'+
+ 'ROSI = (Risk reduction benefit − Control cost) ÷ Control cost × 100 = '+(c.cost>0?'('+Number(c.red.toPrecision(6))+' − '+Number(c.cost.toPrecision(6))+') ÷ '+Number(c.cost.toPrecision(6))+' × 100 = '+fr(c.rosi):'n/a (no control cost)')+'<br>'+
+ 'P(≥1 breach in a year) = 1 − exp(−ARO × P(pass)) = '+fp(c.pBreach*100,3);
+ var f=[{l:'Attack attempts',v:100,t:'100%'},{l:'Pass stage 2 (A)',v:c.pA*100,t:fp(c.pA*100,2)},{l:'Pass stage 3 (B)',v:c.pA*c.pB*100,t:fp(c.pA*c.pB*100,2)},{l:'Pass stage 4 (C): reach exfiltration',v:c.pass*100,t:fp(c.pass*100,2)},{l:'Loss factor after D and E',v:c.fm*100,t:fp(c.fm*100,0),c:'g'}];
+ $('#funnel').innerHTML=hbars(f,100);
+ $('#ba-chart').innerHTML=hbars([{l:'Baseline ALE',v:c.base,t:fm(c.base),c:'r'},{l:'Residual ALE',v:c.ale,t:fm(c.ale),c:'g'},{l:'Annual control cost',v:c.cost,t:fm(c.cost),c:'m'}]);
+}
+function matrixHTML(kind){
+ var cells={};
+ regRows().forEach(function(x){var r=kind==='inh'?x.i:x.r;var k=r.L+'-'+r.I;(cells[k]=cells[k]||[]).push({id:x.f.id,q:r.q})});
+ var h='<div class="mx" role="table" aria-label="'+(kind==='inh'?'Inherent':'Residual')+' risk matrix"><div class="ax"></div>';
+ for(var l=1;l<=5;l++)h+='<div class="ax">'+l+'<br>'+LN[l]+'</div>';
+ for(var i=5;i>=1;i--){
+  h+='<div class="ax">'+i+' '+IN[i]+'</div>';
+  for(l=1;l<=5;l++){
+   var s=l*i,lv=lvl(s),list=cells[l+'-'+i]||[];
+   h+='<div class="cell r-'+lv+'" aria-label="Likelihood '+l+', impact '+i+', score '+s+', '+lv+(list.length?': '+list.map(function(z){return z.id}).join(', '):'')+'">'+list.map(function(z){return '<span class="chip'+(z.q?' q':'')+'">'+z.id+'</span>'}).join('')+'<span class="sc">'+s+'</span></div>';
+  }
+ }
+ return h+'</div><div class="xs mu" style="margin-top:4px">Rows: impact (high at top). Columns: likelihood.</div>';
+}
+function renderRisk(){
+ $('#mx-inh').innerHTML=matrixHTML('inh');$('#mx-res').innerHTML=matrixHTML('res');
+ var h='<tr><th>Finding</th><th>Basis</th><th>Likelihood</th><th>Impact</th><th>Inherent</th><th>Recommended treatment</th><th>Residual L × I</th><th>Residual</th><th>Status</th></tr>';
+ regRows().forEach(function(x){
+  var st=status(x.f),ch=(x.i.s!==x.r.s)?' <span class="xs mu">(from '+x.i.s+')</span>':'';
+  var det=x.i.q?'—':'L '+x.i.L+'→'+x.r.L+', I '+x.i.I+'→'+x.r.I;
+  h+='<tr><td class="nw"><b>'+x.f.id+'</b> '+esc(x.f.title)+'</td><td class="nw">'+(x.i.q?'Qualitative':'Model-derived')+'</td><td class="nw">'+x.i.L+' '+LN[x.i.L]+'</td><td class="nw">'+x.i.I+' '+IN[x.i.I]+'</td><td class="nw">'+x.i.s+' '+levelTag(x.i.lv)+'</td><td style="min-width:240px">'+esc(x.f.treat)+'</td><td class="nw">'+(x.r.L+' × '+x.r.I)+'<div class="xs mu">'+det+'</div></td><td class="nw"><b>'+x.r.s+'</b> '+levelTag(x.r.lv)+ch+'</td><td><span class="pill '+st.c+'">'+esc(st.t)+'</span></td></tr>';
+ });
+ $('#reg-t').innerHTML=h;
+ var c=calc(S.on);
+ $('#derive').innerHTML=
+ '<p><b>Likelihood</b> for F2 to F6 is the model probability of at least one successful exploitation of that weakness in a year, 1 − exp(−ARO × π), where π is the share of attempts that get past the controls up to and including that finding: F2 uses P(A); F3 uses P(A)·P(B); F4, F5 and F6 use P(A)·P(B)·P(C). Bands: &lt;1% Rare (1), 1–&lt;10% Unlikely (2), 10–&lt;25% Possible (3), 25–&lt;50% Likely (4), ≥50% Almost Certain (5).</p>'+
+ '<p><b>Impact</b> is the modelled loss if the weakness is exploited: F2, F3 and F4 use SLE × exposure × damage (they are links of one chain, so controls D and E lower their consequence); F5 uses SLE × exposure factor only (detection finding); F6 uses SLE × damage factor only (data-protection finding). Bands: &lt;$1M Insignificant (1), &lt;$10M Minor (2), &lt;$50M Moderate (3), &lt;$150M Major (4), ≥$150M Severe (5).</p>'+
+ '<p>Nothing is reduced by hand: a score changes only when a control changes a modelled probability or loss. With the default 0.05 attempts per year the baseline likelihood is 4.9%, which sits in the Unlikely band; raise the attack frequency to see higher likelihood bands. A finding can show lower residual risk while still “Open” when upstream controls reduce how often it can be reached.</p>'+
+ '<p><b>F1 and F7</b> (governance and audit) are not changed by the five technical toggles. Their likelihood and impact are fixed qualitative judgements (F1: 4 × 5, F7: 3 × 4) shown with dashed chips, and their residual risk stays equal to inherent risk until governance is actually improved. <b>P1</b> is a process item and is not scored.</p>'+
+ '<p>Risk level bands: Low 1–4, Medium 5–9, High 10–14, Critical 15–25. Current model values: P(pass) = '+Number(c.pass.toPrecision(4))+', loss per breach = '+fm(c.lossBreach)+'.</p>';
+}
+function renderRank(){
+ var rows=CT.map(function(ct){var m=calc(only(ct.id));return {c:ct,m:m}}).sort(function(a,b){return (b.m.rosi==null?-1e18:b.m.rosi)-(a.m.rosi==null?-1e18:a.m.rosi)});
+ var h='<tr><th>#</th><th>Control</th><th>Stage protected</th><th>Finding</th><th>Residual ALE (alone)</th><th>Risk reduction</th><th>Cost / yr</th><th>ROSI</th></tr>';
+ rows.forEach(function(r,i){h+='<tr><td>'+(i+1)+'</td><td>'+r.c.id+' · '+r.c.n+'</td><td class="nw">Stage '+r.c.stage+'</td><td>'+r.c.f+'</td><td class="nw">'+fm(r.m.ale)+'</td><td class="nw">'+fm(r.m.red)+' ('+fp(r.m.redPct,1)+')</td><td class="nw">'+fm(S.cost[r.c.id])+'</td><td class="nw">'+fr(r.m.rosi)+'</td></tr>'});
+ $('#rank-t').innerHTML=h;
+ $('#rank-c1').innerHTML=hbars(rows.map(function(r){return {l:r.c.id+' · '+r.c.n,v:r.m.red,t:fm(r.m.red),c:'g'}}));
+ $('#rank-c2').innerHTML=hbars(rows.map(function(r){return {l:r.c.id+' · '+r.c.n,v:Math.max(0,r.m.rosi||0),t:fr(r.m.rosi)}}));
+}
+function renderAudit(){
+ var cv=coverage();$('#cov').textContent='Weighted remediation coverage: '+cv.pct+'%';
+ var h='<tr><th>Finding</th><th>Description</th><th>Severity</th><th>Related control</th><th>Status</th></tr>';
+ FIND.forEach(function(f){var st=status(f);h+='<tr class="clk'+(f.id===selF?' sel':'')+'" tabindex="0" data-f="'+f.id+'" aria-label="Show details for '+f.id+'"><td class="nw"><b>'+f.id+'</b></td><td>'+esc(f.title)+'<div class="xs mu">'+esc(f.desc)+'</div></td><td><span class="pill '+(f.sev==='Critical'?'p-bad':f.sev==='High'?'p-wn':f.sev==='Medium'?'p-in':'p-mu')+'">'+f.sev+'</span></td><td class="nw">'+(f.ctl?f.ctl+' · '+esc(CTM[f.ctl].n):'None (not a technical toggle)')+'</td><td><span class="pill '+st.c+'">'+esc(st.t)+'</span></td></tr>'});
+ $('#aud-t').innerHTML=h;
+ var f=FM[selF],r=riskOf(f,NONE),rr=riskOf(f,S.on),st=status(f);
+ var d='<div class="hd"><h2>'+f.id+' · '+esc(f.title)+'</h2><span class="pill '+st.c+'">'+esc(st.t)+'</span></div>';
+ if(!f.ctl&&!f.proc)d+='<div class="note warn"><b>Not resolved by the five technical toggles.</b> '+f.id+' concerns governance and regulatory observations. Its risk changes only if governance and audit practices change, which this model does not simulate.</div>';
+ if(f.proc)d+='<div class="note"><b>Process item.</b> Added by this lab for the Monitor and Review stages. It is not a Capital One finding.</div>';
+ if(f.id==='F6')d+='<div class="note"><b>Encryption at rest vs the proposed protection.</b> Encryption at rest does not stop a compromised but authorised identity from reading data; minimisation and tokenisation reduce what that identity can obtain (see comparison below).</div>';
+ d+='<div class="g2"><div><h4>Observation</h4><p>'+esc(f.obs)+'</p><h4>Evidence basis</h4><p>'+esc(f.ev)+'</p><h4>Root cause</h4><p>'+esc(f.root)+'</p><h4>Risk</h4><p>'+esc(f.risk)+'</p></div>'+
+ '<div><h4>Business impact</h4><p>'+esc(f.imp)+'</p><h4>Recommendation</h4><p>'+esc(f.rec)+'</p><h4>Verification procedure</h4><p>'+esc(f.ver)+'</p><h4>Model risk (illustrative)</h4><p>'+(r?'Inherent '+r.s+' '+levelTag(r.lv)+' → residual '+rr.s+' '+levelTag(rr.lv)+(r.q?' (qualitative, unchanged)':''):'Not scored.')+'</p></div></div>';
+ $('#aud-detail').innerHTML=d;
+}
+function renderTimeline(){
+ var T=[['2015','Cloud migration begins','Capital One starts moving workloads to the public cloud. The 2020 OCC action later described ineffective risk assessment processes prior to the migration.'],
+ ['22–23 Mar 2019','Attack occurs','Per the DOJ complaint, the attacker exploited a misconfigured web application firewall, obtained temporary role credentials from the metadata service and copied data from storage buckets.'],
+ ['17 Jul 2019','External tip received','The bank receives a tip from an outside party, about four months after the data was taken (≈117 days).'],
+ ['19 Jul 2019','Intrusion confirmed, vulnerability addressed','The bank confirms the intrusion and fixes the exploited configuration weakness.'],
+ ['29 Jul 2019','Public disclosure','The incident is disclosed publicly; a suspect is arrested the same day. Roughly 106 million people in the US and Canada were affected.'],
+ ['Aug 2020','OCC penalty and Federal Reserve action','The OCC assesses an $80 million civil money penalty and issues a consent order; the Federal Reserve issues a cease-and-desist order.'],
+ ['Dec 2021','Class-action settlement agreed','A $190 million class-action settlement is agreed.'],
+ ['Jun 2022','Criminal conviction','The attacker is convicted in federal court on counts including wire fraud and computer intrusion.'],
+ ['Aug 2022','OCC consent order terminated','The OCC terminates the 2020 consent order.']];
+ $('#tl').innerHTML=T.map(function(t){return '<li><button type="button" aria-expanded="false"><span class="ar" aria-hidden="true">+</span><b>'+t[0]+'</b> · '+t[1]+'<div class="dd">'+t[2]+' <span class="tag">Historical</span></div></button></li>'}).join('');
+ var L=[['IDENTIFY','Audit findings F1–F7, P1','audit'],['ASSESS','5×5 risk matrix, likelihood × impact','risk'],['EVALUATE','ALE, ROSI and 10,000-year Monte Carlo','mc'],['TREAT','Activate controls A–E','controls'],['MONITOR','Detection (D), attack replay, KRIs','attack'],['REVIEW','Re-run and report after changes','report']];
+ $('#life').innerHTML=L.map(function(l,i){return '<button type="button" data-go="'+l[2]+'"><b>'+(i+1)+'. '+l[0]+'</b><span>'+l[1]+'</span></button>'}).join('');
+}
+
+/* ---- Monte Carlo render ---- */
+function mcStale(){return mcRes&&mcRes.key!==cfgKey()}
+function renderMC(){
+ var st=$('#mc-stale');
+ if(!mcRes){st.className='note stale';$('#mc-out').innerHTML='<p class="mu">Not run yet. Choose a configuration, then press “Run 10,000 years”.</p>';return}
+ if(mcStale()){st.className='note warn stale show';st.innerHTML='<b>Results are out of date.</b> The configuration or assumptions changed after this run (shown below: '+esc(mcRes.label)+'). Run again to refresh.'}else st.className='note stale';
+ var r=mcRes.cur,b=mcRes.base,P=mcRes.P,m=mcRes.an;
+ var h='<p class="sm"><b>Configuration simulated:</b> '+esc(mcRes.label)+' · <b>Seed used:</b> <span class="mono">'+esc(mcRes.seed)+'</span> ('+(mcRes.seedFixed?'user-supplied':'random; copy it into the seed box to reproduce this run')+')</p>';
+ h+='<div class="grid">'+
+  kpi('Simulated years',fn(r.N))+kpi('Simulated attack attempts',fn(r.att),'Model draws, not historical attacks')+
+  kpi('Blocked by WAF (A)',fn(r.b2))+kpi('Blocked by metadata protection (B)',fn(r.b3))+kpi('Blocked by IAM (C)',fn(r.b4))+kpi('Reached data exfiltration',fn(r.br))+
+  kpi('Years with ≥1 breach',fn(r.yb),fp(r.yb/r.N*100,2))+kpi('Mean annual loss',fm(r.mean))+kpi('95th percentile annual loss',fm(r.p95))+kpi('99.9th percentile annual loss',fm(r.p999))+kpi('Maximum simulated annual loss',fm(r.max))+'</div>';
+ /* consistency */
+ var lo=r.mean-1.96*r.se,hi=r.mean+1.96*r.se,low=r.br<10;
+ var okMean=low?null:(m.ale>=lo&&m.ale<=hi);
+ h+='<h3 style="margin-top:14px">Consistency with the analytical model</h3><div class="scroll"><table><tr><th>Metric</th><th>Analytical</th><th>Monte Carlo</th><th>Check</th></tr>'+
+  '<tr><td>Expected attempts (ARO × years)</td><td>'+fn(Math.round(P.aro*r.N))+'</td><td>'+fn(r.att)+'</td><td>'+(Math.abs(r.att-P.aro*r.N)<=3*Math.sqrt(P.aro*r.N)?'<span class="pill p-ok">Within 3σ</span>':'<span class="pill p-wn">Outside 3σ</span>')+'</td></tr>'+
+  '<tr><td>Share of attempts reaching exfiltration</td><td>'+fp(m.pass*100,3)+'</td><td>'+(r.att?fp(r.br/r.att*100,3):'n/a')+'</td><td>'+(r.att&&m.pass>0&&m.pass<1?(Math.abs(r.br/r.att-m.pass)<=3*Math.sqrt(m.pass*(1-m.pass)/r.att)?'<span class="pill p-ok">Within 3σ</span>':'<span class="pill p-wn">Outside 3σ</span>'):'<span class="pill p-mu">Exact</span>')+'</td></tr>'+
+  '<tr><td>Years with ≥1 breach</td><td>'+fp(m.pBreach*100,3)+'</td><td>'+fp(r.yb/r.N*100,3)+'</td><td><span class="pill p-mu">Varies with seed</span></td></tr>'+
+  '<tr><td>Mean annual loss (= residual ALE)</td><td>'+fm(m.ale)+'</td><td>'+fm(r.mean)+' (95% CI '+fm(Math.max(0,lo))+' to '+fm(hi)+')</td><td>'+(okMean===null?'<span class="pill p-wn">Too few breaches ('+r.br+') to judge</span>':okMean?'<span class="pill p-ok">Analytical value inside 95% CI</span>':'<span class="pill p-wn">Outside 95% CI (≈5% of seeds)</span>')+'</td></tr></table></div>'+
+  '<p class="xs mu">Results are illustrative and vary with the seed, especially when breaches are rare. The mean converges to the analytical ALE as the number of years grows.</p>';
+ /* charts */
+ var tot=r.att||1;
+ h+='<div class="g2"><div><h3>1. Attack outcome distribution</h3>'+hbars([
+  {l:'Blocked at stage 2 (WAF)',v:r.b2,t:fp(r.b2/tot*100,1)+' · '+fn(r.b2),c:'g'},{l:'Blocked at stage 3 (metadata)',v:r.b3,t:fp(r.b3/tot*100,1)+' · '+fn(r.b3),c:'g'},{l:'Blocked at stage 4 (IAM)',v:r.b4,t:fp(r.b4/tot*100,1)+' · '+fn(r.b4),c:'g'},{l:'Reached stage 5 (breach)',v:r.br,t:fp(r.br/tot*100,1)+' · '+fn(r.br),c:'r'}],r.att||1)+'</div>'+
+  '<div><h3>2. Annual loss distribution</h3><p class="xs mu">Loss is discrete: breaches per year × '+fm(r.lossEv)+' per breach.</p>'+hbars([
+  {l:'0 breaches ($0)',v:r.bk[0],t:fn(r.bk[0]),c:'g'},{l:'1 breach ('+fm(r.lossEv)+')',v:r.bk[1],t:fn(r.bk[1]),c:'w'},{l:'2 breaches ('+fm(2*r.lossEv)+')',v:r.bk[2],t:fn(r.bk[2]),c:'r'},{l:'3+ breaches',v:r.bk[3],t:fn(r.bk[3]),c:'r'}],r.N)+'</div></div>';
+ h+='<div class="g2"><div><h3>3. Breach probability (years with ≥1 breach)</h3>'+hbars([
+  {l:'Baseline · analytical',v:mcRes.anBase.pBreach*100,t:fp(mcRes.anBase.pBreach*100,2),c:'m'},{l:'Baseline · simulated',v:b.yb/b.N*100,t:fp(b.yb/b.N*100,2),c:'r'},{l:'Selected · analytical',v:m.pBreach*100,t:fp(m.pBreach*100,2),c:'m'},{l:'Selected · simulated',v:r.yb/r.N*100,t:fp(r.yb/r.N*100,2),c:'g'}],100)+
+  '<p class="xs mu" style="margin-top:8px">First 100 simulated years (red = at least one breach), selected configuration:</p><div class="yrs" aria-label="First 100 simulated years">'+r.flags.map(function(k){return '<i class="'+(k>0?'b':'')+'"></i>'}).join('')+'</div></div>'+
+  '<div><h3>4. Before-and-after risk (same seed, same attack arrivals)</h3><div class="scroll"><table><tr><th>Metric</th><th>Baseline</th><th>Selected</th></tr>'+
+  [['Breach attempts reaching exfiltration',fn(b.br),fn(r.br)],['Years with ≥1 breach',fn(b.yb),fn(r.yb)],['Mean annual loss',fm(b.mean),fm(r.mean)],['95th percentile',fm(b.p95),fm(r.p95)],['99.9th percentile',fm(b.p999),fm(r.p999)],['Maximum annual loss',fm(b.max),fm(r.max)]].map(function(x){return '<tr><td>'+x[0]+'</td><td>'+x[1]+'</td><td>'+x[2]+'</td></tr>'}).join('')+'</table></div>'+
+  hbars([{l:'Baseline mean loss',v:b.mean,t:fm(b.mean),c:'r'},{l:'Selected mean loss',v:r.mean,t:fm(r.mean),c:'g'}],Math.max(b.mean,r.mean,1e-9))+'</div></div>';
+ h+='<h3>5. Control effectiveness comparison (each control alone, same seed)</h3><div class="scroll"><table><tr><th>Control</th><th>MC mean annual loss</th><th>Analytical residual ALE</th><th>MC breach years</th></tr>'+
+  CT.map(function(c){var s=mcRes.single[c.id],a=calc(only(c.id));return '<tr><td>'+c.id+' · '+c.n+'</td><td>'+fm(s.mean)+'</td><td>'+fm(a.ale)+'</td><td>'+fn(s.yb)+'</td></tr>'}).join('')+'</table></div>'+
+  hbars([{l:'No controls (MC)',v:b.mean,t:fm(b.mean),c:'r'}].concat(CT.map(function(c){var s=mcRes.single[c.id];return {l:c.id+' alone (MC)',v:s.mean,t:fm(s.mean),c:'g'}})),Math.max(b.mean,1e-9));
+ $('#mc-out').innerHTML=h;
+}
+async function runMC(){
+ if(busy)return;
+ var seedIn=$('#seed').value.trim(),fixed=seedIn!=='';
+ var seed=fixed?seedIn:String(crypto.getRandomValues(new Uint32Array(1))[0]);
+ setBusy(true);var tk=tokRep;setStatus('run','Monte Carlo running');$('#mc-out').innerHTML='<p class="mu">Running 10,000 simulated years…</p>';
+ await sleep(30);if(tk!==tokRep)return;
+ var res={seed:seed,seedFixed:fixed,key:cfgKey(),label:presetName(),P:{aro:S.aro,sle:S.sle},an:calc(S.on),anBase:calc(NONE),ts:new Date()};
+ res.cur=simulate(S.on,seed,NYEARS);res.base=simulate(NONE,seed,NYEARS);res.single={};
+ CT.forEach(function(c){res.single[c.id]=simulate(only(c.id),seed,NYEARS)});
+ mcRes=res;seedTxt=fixed?seedIn:'';
+ setBusy(false);setStatus('in','Monte Carlo complete');ver++;renderAll();
+}
+
+/* ================= REPORT ================= */
+function snapshot(){
+ var c=calc(S.on),cv=coverage(),mr=regRows(),d=new Date();
+ return {ts:d,tsTxt:d.toLocaleString(),cfg:presetName(),active:CT.filter(function(x){return S.on[x.id]}),c:c,cb:calc(NONE),cv:cv,rows:mr,run:run,mc:mcRes,mcStale:mcStale(),P:clone(S),key:cfgKey(),vs:ver};
+}
+function recs(sn){
+ var r=[],inactive=CT.filter(function(x){return !S.on[x.id]}).map(function(x){return {x:x,m:calc(only(x.id))}}).sort(function(a,b){return (b.m.rosi||0)-(a.m.rosi||0)});
+ inactive.forEach(function(o){r.push('Consider control '+o.x.id+' ('+o.x.n+', addresses '+o.x.f+'): modelled standalone risk reduction '+fm(o.m.red)+' per year for '+fm(S.cost[o.x.id])+' per year (ROSI '+fr(o.m.rosi)+', hypothetical assumptions).')});
+ if(!inactive.length)r.push('All five technical controls are active in the model. Keep them in place and verify them with authorised, periodic testing.');
+ r.push('Address governance findings F1 and F7 directly: cloud risk assessment framework, control baselines, and risk-based internal audit coverage of cloud. The technical toggles do not change these.');
+ r.push('Operate the Monitor and Review stages (P1): define key risk indicators, re-run this assessment after every control or architecture change, and replace illustrative assumptions with real incident, cost and control-test data.');
+ return r;
+}
+function csvRows(sn){
+ var R=[['Section','Metric','Value','Unit','Displayed']],c=sn.c;
+ function a(s,m,v,u,d){R.push([s,m,v,u,d==null?'':d])}
+ a('Report','Generated at',sn.ts.toISOString(),'','');a('Report','Application','Capital One 2019 Cyber Risk Simulation Lab','','SRMP 21CSC308T, Project LLT-1');
+ a('Configuration','Defence configuration',sn.cfg,'',sn.cfg);
+ CT.forEach(function(x){a('Configuration','Control '+x.id+' active',S.on[x.id]?'yes':'no','',S.on[x.id]?'Active':'Inactive')});
+ a('Parameters','Loss proxy SLE',S.sle,'$M',fm(S.sle));a('Parameters','Attack frequency ARO',S.aro,'per year',String(S.aro));
+ a('Parameters','WAF pass probability',S.p.A,'prob',String(S.p.A));a('Parameters','Metadata-stage pass probability',S.p.B,'prob',String(S.p.B));a('Parameters','IAM-stage pass probability',S.p.C,'prob',String(S.p.C));
+ a('Parameters','Detection exposure factor',S.F,'factor',String(S.F));a('Parameters','Tokenisation damage factor',S.M,'factor',String(S.M));
+ CT.forEach(function(x){a('Parameters','Annual cost '+x.id,S.cost[x.id],'$M/yr',fm(S.cost[x.id]))});
+ a('Financial','Baseline ALE',c.base,'$M',fm(c.base));a('Financial','P(pass preventive controls)',c.pass,'prob',String(Number(c.pass.toPrecision(6))));
+ a('Financial','Exposure x damage factor',c.fm,'factor',String(Number(c.fm.toPrecision(6))));a('Financial','Loss per attack',c.perAttack,'$M',fm(c.perAttack));
+ a('Financial','Residual ALE',c.ale,'$M',fm(c.ale));a('Financial','Risk reduction',c.red,'$M/yr',fm(c.red));a('Financial','Risk reduction percentage',c.redPct,'%',fp(c.redPct,2));
+ a('Financial','Annual control investment',c.cost,'$M/yr',fm(c.cost));a('Financial','ROSI',c.rosi==null?'':c.rosi,'%',fr(c.rosi));a('Financial','P(at least one breach per year)',c.pBreach,'prob',fp(c.pBreach*100,3));
+ sn.rows.forEach(function(x){var f=x.f.id;a('Risk register',f+' inherent score',x.i.s,'L x I',x.i.L+' x '+x.i.I+' = '+x.i.s+' '+x.i.lv);a('Risk register',f+' residual score',x.r.s,'L x I',x.r.L+' x '+x.r.I+' = '+x.r.s+' '+x.r.lv);a('Risk register',f+' status','','',status(x.f).t)});
+ a('Audit','Weighted remediation coverage',sn.cv.pct,'%',sn.cv.pct+'%');
+ if(sn.run){var r=sn.run;a('Attack chain','Replay mode',r.mode,'','');a('Attack chain','Outcome',r.blockedAt?'blocked at stage '+r.blockedAt+' by control '+r.by:'breach','','');a('Attack chain','Records exposed',r.exposed,'million',r.exposed.toFixed(1)+'M');a('Attack chain','Loss',r.loss,'$M',fm(r.loss))}
+ else a('Attack chain','Outcome','not run','','');
+ if(sn.mc){var m=sn.mc,r2=m.cur;a('Monte Carlo','Configuration simulated',m.label,'','');a('Monte Carlo','Stale vs current configuration',sn.mcStale?'yes':'no','','');a('Monte Carlo','Seed',m.seed,'','');
+  a('Monte Carlo','Simulated years',r2.N,'years',fn(r2.N));a('Monte Carlo','Simulated attack attempts',r2.att,'',fn(r2.att));a('Monte Carlo','Blocked by WAF',r2.b2,'',fn(r2.b2));a('Monte Carlo','Blocked by metadata protection',r2.b3,'',fn(r2.b3));a('Monte Carlo','Blocked by IAM',r2.b4,'',fn(r2.b4));a('Monte Carlo','Reached exfiltration',r2.br,'',fn(r2.br));
+  a('Monte Carlo','Years with at least one breach',r2.yb,'years',fn(r2.yb));a('Monte Carlo','Mean annual loss',r2.mean,'$M',fm(r2.mean));a('Monte Carlo','95th percentile annual loss',r2.p95,'$M',fm(r2.p95));a('Monte Carlo','99.9th percentile annual loss',r2.p999,'$M',fm(r2.p999));a('Monte Carlo','Maximum annual loss',r2.max,'$M',fm(r2.max));
+  a('Monte Carlo','Baseline mean annual loss (same seed)',m.base.mean,'$M',fm(m.base.mean));}
+ else a('Monte Carlo','Status','not run','','');
+ return R;
+}
+function csvText(sn){return csvRows(sn).map(function(r){return r.map(function(v){v=String(v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}).join(',')}).join('\r\n')}
+function summaryText(sn){
+ var c=sn.c,t=[];
+ t.push('Capital One 2019 Cyber Risk Simulation Lab (SRMP 21CSC308T, LLT-1): simulation summary');
+ t.push('Configuration: '+sn.cfg+(sn.active.length?' (active: '+sn.active.map(function(x){return x.id}).join(', ')+')':''));
+ t.push('Attack chain: '+(sn.run?(sn.run.blockedAt?'blocked at stage '+sn.run.blockedAt+' by control '+sn.run.by:'breach, loss '+fm(sn.run.loss)+' ('+sn.run.mode+' mode)'):'not run'));
+ t.push('Baseline ALE '+fm(c.base)+' → residual ALE '+fm(c.ale)+' (reduction '+fp(c.redPct,2)+'); annual control investment '+fm(c.cost)+'; ROSI '+fr(c.rosi));
+ var mr=maxRes();t.push('Highest residual register score: '+mr.s+' ('+mr.lv+'); weighted remediation coverage '+sn.cv.pct+'%');
+ t.push(sn.mc?'Monte Carlo (10,000 years, seed '+sn.mc.seed+(sn.mcStale?', STALE':'')+'): '+fn(sn.mc.cur.yb)+' breach years, mean annual loss '+fm(sn.mc.cur.mean)+', P95 '+fm(sn.mc.cur.p95)+', P99.9 '+fm(sn.mc.cur.p999)+', max '+fm(sn.mc.cur.max):'Monte Carlo: not run');
+ t.push('Caveat: $270M is a proxy (OCC $80M + settlement $190M), not total loss; all probabilities and costs are illustrative assumptions.');
+ return t.join('\n');
+}
+function kv(a,b){return '<div><span>'+a+'</span><b>'+b+'</b></div>'}
+function reportHTML(sn){
+ var c=sn.c,h='';
+ h+='<h2>Capital One 2019 Cyber Risk Simulation Report</h2><p class="sm mu">SRM Institute of Science and Technology, Kattankulathur · Security Risk Management Principles (21CSC308T) · Project LLT-1 · Generated '+esc(sn.tsTxt)+'</p>';
+ h+='<h2>1. Selected defence configuration</h2><p><b>'+esc(sn.cfg)+'</b></p><div class="kv">'+kv('Attack frequency (ARO)',S.aro+' per year')+kv('Loss proxy (SLE)',fm(S.sle))+kv('WAF pass probability',S.p.A)+kv('Metadata-stage pass probability',S.p.B)+kv('IAM-stage pass probability',S.p.C)+kv('Detection exposure factor',S.F)+kv('Tokenisation damage factor',S.M)+'</div>';
+ h+='<h2>2. Active security controls</h2><div class="scroll"><table><tr><th>Control</th><th>Status</th><th>Stage</th><th>Finding</th><th>Assumption</th><th>Annual cost</th></tr>'+CT.map(function(x){return '<tr><td>'+x.id+' · '+x.n+'</td><td>'+(S.on[x.id]?'Active':'Inactive')+'</td><td>Stage '+x.stage+'</td><td>'+x.f+'</td><td>'+esc(effText(x))+'</td><td>'+fm(S.cost[x.id])+'</td></tr>'}).join('')+'</table></div>';
+ h+='<h2>3. Attack-chain outcome</h2>';
+ if(sn.run){var r=sn.run;h+='<p>Replay mode: '+(r.mode==='demo'?'demonstration (active control always blocks)':'model (probabilistic)')+'. Configuration at launch: '+(CT.filter(function(x){return r.on[x.id]}).map(function(x){return x.id}).join(', ')||'no controls')+'.</p><p><b>'+(r.blockedAt?'Blocked at stage '+r.blockedAt+' by control '+r.by+' ('+esc(CTM[r.by].n)+'). Records exposed 0, loss $0.':'Breach: about '+r.exposed.toFixed(1)+'M of '+REC+'M simulated records exposed; estimated loss '+fm(r.loss)+'.')+'</b></p>'+(r.blockedAt?'<p class="sm">Why: '+esc(CTM[r.by].why)+'</p>':'')}
+ else h+='<p class="mu">Not run. No attack replay has been launched in this session.</p>';
+ h+='<h2>4. Audit findings affected</h2><div class="scroll"><table><tr><th>Finding</th><th>Severity</th><th>Related control</th><th>Status</th></tr>'+FIND.map(function(f){return '<tr><td>'+f.id+' '+esc(f.title)+'</td><td>'+f.sev+'</td><td>'+(f.ctl||'None')+'</td><td>'+esc(status(f).t)+'</td></tr>'}).join('')+'</table></div><p class="sm">Weighted remediation coverage: '+sn.cv.pct+'%. F1 and F7 are governance findings not changed by the technical controls.</p>';
+ h+='<h2>5. Inherent risk and 6. Residual risk (model-generated, illustrative)</h2><div class="scroll"><table><tr><th>Finding</th><th>Inherent L × I</th><th>Inherent</th><th>Residual L × I</th><th>Residual</th></tr>'+sn.rows.map(function(x){return '<tr><td>'+x.f.id+' '+esc(x.f.title)+'</td><td>'+x.i.L+' × '+x.i.I+'</td><td>'+x.i.s+' '+x.i.lv+'</td><td>'+x.r.L+' × '+x.r.I+'</td><td>'+x.r.s+' '+x.r.lv+'</td></tr>'}).join('')+'</table></div>';
+ h+='<h2>7. Baseline ALE · 8. Residual ALE · 9. Investment · 10. ROSI</h2><div class="kv">'+kv('Baseline ALE (ARO × SLE)',fm(c.base))+kv('P(pass preventive controls)',Number(c.pass.toPrecision(6)))+kv('Exposure × damage factor',Number(c.fm.toPrecision(6)))+kv('Loss per attack',fm(c.perAttack))+kv('Residual ALE',fm(c.ale))+kv('Risk reduction',fm(c.red)+' ('+fp(c.redPct,2)+')')+kv('Annual control investment',fm(c.cost))+kv('ROSI',fr(c.rosi))+'</div><p class="sm">ROSI = (Risk reduction benefit − Control cost) ÷ Control cost × 100.</p>';
+ h+='<h2>11. Monte Carlo results</h2>';
+ if(sn.mc){var m=sn.mc,q=m.cur;h+=(sn.mcStale?'<p><b>Note: stale.</b> These results were produced for “'+esc(m.label)+'” and the configuration has since changed.</p>':'')+'<p>Configuration simulated: '+esc(m.label)+' · seed '+esc(m.seed)+' · '+fn(q.N)+' years.</p><div class="kv">'+kv('Simulated attack attempts',fn(q.att))+kv('Blocked by WAF',fn(q.b2))+kv('Blocked by metadata protection',fn(q.b3))+kv('Blocked by IAM',fn(q.b4))+kv('Reached exfiltration',fn(q.br))+kv('Years with ≥1 breach',fn(q.yb)+' ('+fp(q.yb/q.N*100,2)+')')+kv('Mean annual loss',fm(q.mean))+kv('95th percentile',fm(q.p95))+kv('99.9th percentile',fm(q.p999))+kv('Maximum annual loss',fm(q.max))+kv('Baseline mean annual loss (same seed)',fm(m.base.mean))+'</div>'}
+ else h+='<p class="mu">Not run. Press “Run 10,000 years” in the Monte Carlo tab to include results.</p>';
+ h+='<h2>12. Security recommendations</h2><ol>'+recs(sn).map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ol>';
+ h+='<h2>13. Simulation assumptions and limitations</h2><ul class="sm"><li>$270M is a proxy for single loss expectancy built from the OCC penalty ($80M) and class-action settlement ($190M). It is not verified total incident loss.</li><li>The attack rate, stage pass probabilities, detection exposure factor (0.4), tokenisation damage factor (0.5) and control costs are hypothetical educational assumptions, not measured effectiveness or verified Capital One costs.</li><li>Likelihood and impact scores are model-generated from those assumptions using the disclosed bands; F1 and F7 use fixed qualitative judgements.</li><li>Findings are reconstructed from public sources; the lab has no access to Capital One internal audit records.</li><li>IMDSv2 was introduced after the 2019 breach, so Control B is a counterfactual.</li><li>Monte Carlo attempts are model draws, not historical attacks; results vary with the seed.</li><li>All attack activity is simulated with dummy data. No real system is contacted.</li></ul>';
+ return h;
+}
+function generateReport(){
+ report=snapshot();
+ $('#rep-out').innerHTML=reportHTML(report);
+ ['#btn-csv','#btn-html','#btn-print','#btn-copy'].forEach(function(s){$(s).disabled=false});
+ $('#rep-stale').classList.remove('show');
+ toast('Report generated');
+}
+function download(name,type,data){var b=new Blob([data],{type:type}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){a.remove();URL.revokeObjectURL(u)},500)}
+function copyText(t){
+ if(navigator.clipboard&&navigator.clipboard.writeText){return navigator.clipboard.writeText(t).then(function(){return true},function(){return legacyCopy(t)})}
+ return Promise.resolve(legacyCopy(t));
+}
+function legacyCopy(t){var b=$('#copybox');b.value=t;b.classList.remove('sr');b.select();var ok=false;try{ok=document.execCommand('copy')}catch(e){}b.classList.add('sr');return ok}
+
+/* ================= PRESENTATION ================= */
+var PS=0,pOpen=false,pTimer=null,pStart=0,prevMode='model',notesOn=false;
+var PRES=[
+ {t:'1. What happened (≈ 40 s)',sec:40,notes:'Say: In March 2019 an attacker used one chain of weaknesses at Capital One: a misconfigured WAF, exposed metadata credentials and an over-privileged role. About 106 million people were affected and nobody inside noticed for about four months. The penalty and settlement add up to $270 million, which we use only as a proxy loss, not the total cost.',
+  html:function(){return '<div class="big">'+kpi('People affected','≈ 106M','','hist')+kpi('Undetected for','≈ 4 months','22–23 Mar → 17 Jul 2019','hist')+kpi('OCC penalty','$80M','Aug 2020','hist')+kpi('Class-action settlement','$190M','Dec 2021','hist')+kpi('Loss proxy used here','$270M','Penalty + settlement, not total loss','sim')+'</div><div class="note warn" style="font-size:16px">Five weaknesses, one chain. Fix any link and the chain breaks.</div>'}},
+ {t:'2. The attack path (≈ 60 s)',sec:60,notes:'Say: Click Baseline attack scenario, then Launch attack. Walk left to right: internet to WAF, SSRF through the WAF, credentials from the metadata service, the IAM role reads S3, and the data is copied out. With no controls the attacker succeeds at every stage.',
+  html:function(){return '<div class="row" style="margin-bottom:10px"><button class="btn" data-pa="base" type="button">Baseline attack scenario</button><button class="btn btn-launch" data-lock type="button">Launch attack</button></div><div class="svgwrap" id="arch-pres1"></div><div class="prog"><i class="pbar"></i></div><div class="chain compact" id="chain-pres"></div><div class="out outbox" aria-live="polite"></div>'}},
+ {t:'3. Controls stop the chain (≈ 75 s)',sec:75,notes:'Say: Turn on preventive controls A to C and launch again. Point to the stage where the chain stops and read the “why blocked” explanation. Then Full defence to show detection and tokenisation limiting damage if an attack still gets through. Remember IMDSv2 came after 2019, so B is a what-if.',
+  html:function(){return '<div class="row" style="margin-bottom:10px">'+presetBtns()+'<select class="modesel" data-lock aria-label="Replay mode"><option value="model">Model (probabilistic)</option><option value="demo">Demonstration (control always blocks)</option></select><button class="btn btn-launch" data-lock type="button">Launch attack</button></div><div class="row" id="pres-chips" style="margin-bottom:10px"></div><div class="chain compact" id="chain-pres2"></div><div class="out outbox" aria-live="polite"></div><div class="note why-wrap" hidden></div>'}},
+ {t:'4. Before and after (≈ 60 s)',sec:60,notes:'Say: Baseline expected annual loss versus residual loss with the selected controls, the annual cost of the controls, and ROSI. Stress that these come from hypothetical assumptions. Optionally run the 10,000-year Monte Carlo to show the same story in simulated years.',
+  html:function(){var c=calc(S.on);return '<div class="row" style="margin-bottom:10px">'+presetBtns()+'<button class="btn sec" data-pmc="1" data-lock type="button">Run 10,000 years</button></div><div class="big">'+kpi('Baseline ALE',fm(c.base),'ARO × SLE','hist')+kpi('Residual ALE',fm(c.ale),esc(presetName()),'sim')+kpi('Risk reduction',fp(c.redPct,2),fm(c.red)+' per year','sim')+kpi('Annual control cost',fm(c.cost))+kpi('ROSI',fr(c.rosi))+kpi('Highest residual risk',maxRes().s+' '+maxRes().lv,'Risk register')+'</div><div style="margin-top:12px;font-size:16px">'+hbars([{l:'Baseline ALE',v:c.base,t:fm(c.base),c:'r'},{l:'Residual ALE',v:c.ale,t:fm(c.ale),c:'g'}])+'</div><div id="pres-mc" class="sm" style="margin-top:10px"></div>'}},
+ {t:'5. Conclusion (≈ 30 s)',sec:30,notes:'Say: The incident was not one bug. It was a governance gap that let five technical weaknesses line up. We identified findings, assessed risk, evaluated loss with ALE and Monte Carlo, treated it with layered controls, and we would monitor and review. Layered preventive controls delivered most of the modelled benefit; detection and tokenisation limit the damage when prevention fails.',
+  html:function(){var c=calc(S.on);return '<div class="life" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr))">'+['IDENTIFY|Audit findings F1–F7','ASSESS|5×5 risk matrix','EVALUATE|ALE, ROSI, Monte Carlo','TREAT|Controls A–E','MONITOR|Detection, KRIs','REVIEW|Re-run after change'].map(function(x,i){x=x.split('|');return '<div class="kpi"><div class="l">'+(i+1)+'. '+x[0]+'</div><div class="s" style="font-size:14px">'+x[1]+'</div></div>'}).join('')+'</div><div class="note" style="font-size:17px;margin-top:14px"><b>Current configuration: '+esc(presetName())+'.</b> Baseline ALE '+fm(c.base)+' → residual ALE '+fm(c.ale)+', ROSI '+fr(c.rosi)+'.</div><ul style="font-size:17px"><li>Layered controls break the chain at several points.</li><li>Detection and tokenisation limit damage when prevention fails.</li><li>Governance findings F1 and F7 need management action, not a toggle.</li></ul><div class="note warn">All figures are illustrative model outputs. $270M is a loss proxy, not total loss.</div>'}}
+];
+function openPres(){
+ pOpen=true;prevMode=mode;mode='demo';$('#pres').hidden=false;document.body.style.overflow='hidden';
+ PS=0;pStart=Date.now();clearInterval(pTimer);pTimer=setInterval(tickPres,1000);tickPres();drawPres();$('#pres-next').focus();
+}
+function closePres(){pOpen=false;mode=prevMode;$('#pres').hidden=true;document.body.style.overflow='';clearInterval(pTimer);
+ /* remove presentation chain duplicates so ids stay unique */ $('#pres-body').innerHTML='';renderAll()}
+function tickPres(){var s=Math.floor((Date.now()-pStart)/1000);$('#pres-time').textContent='Elapsed '+Math.floor(s/60)+':'+('0'+s%60).slice(-2)+' · suggested total ≈ 4:25'}
+function drawPres(){
+ var p=PRES[PS];$('#pres-title').textContent=p.t;
+ $('#pres-body').innerHTML='<div class="pres">'+p.html()+'<div class="notes" id="pres-notes" '+(notesOn?'':'hidden')+'>'+esc(p.notes)+'</div></div>';
+ $('#pres-dots').innerHTML=PRES.map(function(x,i){return '<i class="'+(i===PS?'on':'')+'"></i>'}).join('');
+ $('#pres-prev').disabled=PS===0;$('#pres-next').textContent=PS===PRES.length-1?'Finish':'Next';
+ var a1=$('#arch-pres1');if(a1)a1.innerHTML=archSVG('p1');
+ var c1=$('#chain-pres');if(c1)c1.innerHTML=chainHTML(false);
+ var c2=$('#chain-pres2');if(c2)c2.innerHTML=chainHTML(false);
+ if(c2){/* include a diagram too */var d=document.createElement('div');d.className='svgwrap';d.style.margin='0 0 10px';d.innerHTML=archSVG('p2');c2.parentNode.insertBefore(d,c2)}
+ renderAll();setOut(lastOut.t,lastOut.k);setWhy(lastWhy);
+}
+function renderPresDynamic(){
+ if(!pOpen)return;
+ var chips=$('#pres-chips');
+ if(chips)chips.innerHTML=CT.map(function(c){return '<button class="btn sm '+(S.on[c.id]?'':'sec')+'" data-ptog="'+c.id+'" data-lock type="button" aria-pressed="'+(!!S.on[c.id])+'">'+c.id+' · '+c.n+'</button>'}).join('');
+ if(PS===3){var b=$('#pres-body .pres');/* refresh finance step */var keep=$('#pres-mc')?$('#pres-mc').innerHTML:'';var n=$('#pres-notes');var hidden=n.hidden;b.innerHTML=PRES[3].html()+'<div class="notes" id="pres-notes" '+(hidden?'hidden':'')+'>'+esc(PRES[3].notes)+'</div>';$('#pres-mc').innerHTML=keep;}
+ if(PS===4){var n4=$('#pres-notes'),h4=n4.hidden;$('#pres-body .pres').innerHTML=PRES[4].html()+'<div class="notes" id="pres-notes" '+(h4?'hidden':'')+'>'+esc(PRES[4].notes)+'</div>'}
+}
+
+/* ================= RENDER ALL ================= */
+function renderAll(){
+ renderKPIs();renderFinance();renderRisk();renderRank();renderAudit();renderMC();paintControls();syncInputs();paintChain();
+ $$('[data-lock]').forEach(function(e){e.disabled=busy});
+ if(report){var st=report.key!==cfgKey()||report.vs!==ver&&(mcRes!==report.mc||run!==report.run);$('#rep-stale').classList.toggle('show',st)}
+ renderPresDynamic();
+ if(pOpen){$$('[data-lock]').forEach(function(e){e.disabled=busy});$$('.preset').forEach(function(b){b.setAttribute('aria-pressed',String(b.getAttribute('data-preset')===presetKey()))});$$('.modesel').forEach(function(m){m.value=mode})}
+}
+function changed(){ver++;
+ if(!busy&&!run)setStatus('','Ready');
+ if(!busy&&run)setStatus(run.blockedAt?'ok':'bad',run.blockedAt?'Attack blocked at stage '+run.blockedAt+' by control '+run.by+' (config changed since)':'Breach (config changed since)');
+ renderAll()}
+
+/* ================= RESET ================= */
+function resetAll(){
+ tokRep++;busy=false;S=clone(DEF);S.on={A:0,B:0,C:0,D:0,E:0};mode=pOpen?'demo':'model';prevMode='model';seedTxt='';repCount=0;
+ run=null;mcRes=null;report=null;verif={};selF='F2';ver++;freshStages();
+ $$('.logbox').forEach(function(b){b.innerHTML=''});setOut('Press “Launch attack”.','');setWhy('');
+ $$('.probe').forEach(function(p){p.textContent=''});
+ $('#rep-out').innerHTML='<p class="mu">No report generated yet.</p>';['#btn-csv','#btn-html','#btn-print','#btn-copy'].forEach(function(s){$(s).disabled=true});$('#rep-stale').classList.remove('show');
+ $('#seed').value='';
+ setStatus('','Ready');renderAll();if(pOpen)drawPres();toast('Simulation reset');
+}
+
+/* ================= TABS ================= */
+var TABS=[['overview','Overview'],['attack','Attack Simulation'],['controls','Security Controls'],['risk','Risk Assessment'],['mc','Monte Carlo Analysis'],['audit','Audit Findings'],['report','Simulation Report']];
+function showTab(id,focus){
+ TABS.forEach(function(t){var p=$('#tab-'+t[0]),b=$('#t-'+t[0]),on=t[0]===id;p.hidden=!on;b.setAttribute('aria-selected',String(on));b.tabIndex=on?0:-1;if(on&&focus)b.focus()});
+ window.scrollTo(0,0);
+}
+function buildTabs(){
+ $('#tablist').innerHTML=TABS.map(function(t,i){return '<button class="tab" role="tab" id="t-'+t[0]+'" data-tab="'+t[0]+'" aria-controls="tab-'+t[0]+'" aria-selected="'+(i===0)+'" tabindex="'+(i===0?0:-1)+'" type="button">'+(i+1)+'. '+t[1]+'</button>'}).join('');
+}
+
+/* ================= EVENTS ================= */
+function bind(){
+ document.addEventListener('click',function(e){
+  var t=e.target.closest('button,[data-f]');if(!t)return;
+  if(t.hasAttribute('data-tab')){showTab(t.getAttribute('data-tab'));return}
+  if(t.hasAttribute('data-go')){showTab(t.getAttribute('data-go'));return}
+  if(t.hasAttribute('data-preset')){if(!busy)applyPreset(t.getAttribute('data-preset'));return}
+  if(t.hasAttribute('data-probe')){runProbe(t.getAttribute('data-probe'));return}
+  if(t.hasAttribute('data-ptog')){if(!busy){var id=t.getAttribute('data-ptog');S.on[id]=S.on[id]?0:1;changed()}return}
+  if(t.hasAttribute('data-pa')){if(!busy)applyPreset('');return}
+  if(t.hasAttribute('data-pmc')){runMC().then(function(){var o=$('#pres-mc');if(o&&mcRes){var r=mcRes.cur;o.innerHTML='<b>10,000 simulated years ('+esc(mcRes.label)+', seed '+esc(mcRes.seed)+'):</b> '+fn(r.yb)+' years with a breach, mean annual loss '+fm(r.mean)+', 99.9th percentile '+fm(r.p999)+', maximum '+fm(r.max)+'. Baseline mean annual loss '+fm(mcRes.base.mean)+'.'}});return}
+  if(t.classList.contains('btn-launch')){launch();return}
+  if(t.classList.contains('btn-clr')){if(!busy){clearRun();setStatus('','Ready')}return}
+  if(t.closest('.tl')&&t.tagName==='BUTTON'){var x=t.getAttribute('aria-expanded')==='true';t.setAttribute('aria-expanded',String(!x));$('.ar',t).textContent=x?'+':'−';return}
+  if(t.hasAttribute('data-f')){selF=t.getAttribute('data-f');renderAudit();return}
+ });
+ document.addEventListener('keydown',function(e){
+  if(e.key==='Enter'&&e.target.hasAttribute&&e.target.hasAttribute('data-f')){selF=e.target.getAttribute('data-f');renderAudit();var r=$('tr[data-f="'+selF+'"]');if(r)r.focus()}
+  if(e.target.getAttribute&&e.target.getAttribute('role')==='tab'&&(e.key==='ArrowRight'||e.key==='ArrowLeft')){
+   var i=TABS.findIndex(function(t){return 't-'+t[0]===e.target.id}),n=(i+(e.key==='ArrowRight'?1:TABS.length-1))%TABS.length;showTab(TABS[n][0],true);
+  }
+  if(pOpen){if(e.key==='Escape')closePres();else if(e.key==='ArrowRight'&&!/INPUT|SELECT|TEXTAREA/.test(e.target.tagName))$('#pres-next').click();else if(e.key==='ArrowLeft'&&!/INPUT|SELECT|TEXTAREA/.test(e.target.tagName))$('#pres-prev').click()}
+ });
+ document.addEventListener('change',function(e){
+  var t=e.target;
+  if(t.hasAttribute('data-tog')){if(!busy){S.on[t.getAttribute('data-tog')]=t.checked?1:0;changed()}else t.checked=!t.checked;return}
+  if(t.classList.contains('modesel')){mode=t.value;renderAll();return}
+  if(t.hasAttribute('data-param')){ /* normalise: revert invalid */ var k=t.getAttribute('data-param'),v=parseFloat(t.value),r=RANGE[k];if(t.value===''||!isFinite(v)||v<r[0]||v>r[1]){toast('Value must be between '+r[0]+' and '+r[1]+'. Previous value kept.');t.value=getP(k);t.removeAttribute('aria-invalid')}return}
+  if(t.id==='seed'){seedTxt=t.value.trim();repCount=0}
+ });
+ document.addEventListener('input',function(e){
+  var t=e.target;
+  if(t.hasAttribute&&t.hasAttribute('data-param')){
+   var k=t.getAttribute('data-param'),v=parseFloat(t.value),r=RANGE[k];
+   if(t.value===''||!isFinite(v)||v<r[0]||v>r[1]){t.setAttribute('aria-invalid','true');return}
+   t.removeAttribute('aria-invalid');if(getP(k)!==v){setP(k,v);changed()}
+  }
+  if(t.id==='seed'){seedTxt=t.value.trim();repCount=0}
+ });
+ $('#btn-reset').addEventListener('click',resetAll);
+ $('#btn-theme').addEventListener('click',function(){var r=document.documentElement,d=r.getAttribute('data-theme')==='dark'||(!r.getAttribute('data-theme')&&matchMedia('(prefers-color-scheme: dark)').matches);r.setAttribute('data-theme',d?'light':'dark')});
+ $('#btn-pres').addEventListener('click',openPres);
+ $('#pres-exit').addEventListener('click',closePres);
+ $('#pres-prev').addEventListener('click',function(){if(PS>0){PS--;drawPres()}});
+ $('#pres-next').addEventListener('click',function(){if(PS<PRES.length-1){PS++;drawPres()}else closePres()});
+ $('#pres-notes-btn').addEventListener('click',function(){notesOn=!notesOn;this.setAttribute('aria-pressed',String(notesOn));var n=$('#pres-notes');if(n)n.hidden=!notesOn});
+ $('#btn-mc').addEventListener('click',runMC);
+ $('#btn-defaults').addEventListener('click',function(){if(busy)return;var on=S.on;S=clone(DEF);S.on=on;changed();toast('Default assumptions restored')});
+ $('#btn-gen').addEventListener('click',generateReport);
+ $('#btn-csv').addEventListener('click',function(){if(report)download('Capital_One_Simulation_Results.csv','text/csv;charset=utf-8','﻿'+csvText(report))});
+ $('#btn-html').addEventListener('click',function(){if(!report)return;var css='body{font:14px/1.5 system-ui,Segoe UI,sans-serif;margin:24px;color:#111}h2{border-bottom:2px solid #22b8d8;padding-bottom:4px;margin-top:22px;font-size:17px}table{border-collapse:collapse;width:100%;font-size:12.5px}th,td{border-bottom:1px solid #ccc;padding:5px 7px;text-align:left;vertical-align:top}.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:4px 18px}.kv div{display:flex;justify-content:space-between;border-bottom:1px solid #ddd;padding:2px 0}.sm{font-size:12.5px}.mu{color:#555}';download('Capital_One_Simulation_Report.html','text/html;charset=utf-8','<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Capital One 2019 Simulation Report</title><style>'+css+'</style></head><body>'+$('#rep-out').innerHTML+'</body></html>')});
+ $('#btn-print').addEventListener('click',function(){if(report)window.print()});
+ $('#btn-copy').addEventListener('click',function(){if(!report)return;copyText(summaryText(report)).then(function(ok){toast(ok?'Summary copied to clipboard':'Copy failed: select the text manually')})});
+}
+
+/* ================= INIT ================= */
+function init(){
+ buildTabs();buildControls();buildParams();renderTimeline();
+ $('#arch-ov').innerHTML=archSVG('o');$('#arch-atk').innerHTML=archSVG('a');
+ $('#chain-main').innerHTML=chainHTML(true);
+ ['#presets-a','#presets-c','#presets-r'].forEach(function(s){$(s).innerHTML=presetBtns()});
+ bind();renderAll();showTab('overview');
+ /* initial status */
+ setStatus('','Ready');
+}
+init();
+})();
+</script>
+</body>
+</html>
